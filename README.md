@@ -22,11 +22,11 @@ Genau das ist am 09.08.2026 passiert: Eine Themenübersicht ließ **TÜV-Termin*
 | | |
 |---|---|
 | 🔍 **Vollständigkeit erzwungen** | Jede Aufnahme wird klassifiziert (A/B/C) und gelesen. Unbenannte Memos → Transkript ist Pflicht, nicht optional. |
-| 📊 **Abdeckung ausgewiesen** | „Nichts gefunden" gibt es nur mit Beleg: *X von Y Aufnahmen ausgewertet, ungelesen: …* |
+| 📊 **Abdeckung ausgewiesen** | „Nichts gefunden“ gibt es nur mit Beleg: *X von Y Aufnahmen ausgewertet, ungelesen: …* |
 | 🧠 **Lernende Wissensbasis** | Personen, Projekte, Themen-Cluster und ASR-Korrekturen wachsen extern mit – niemals im Skill selbst. |
-| 🔁 **Delta-Abfragen** | Ein Auswertungs-Log merkt sich den letzten Lauf. „Was ist neu seit gestern?" liest nur das Delta. |
+| 🔁 **Delta-Abfragen** | Ein Auswertungs-Log merkt sich den letzten Lauf. „Was ist neu seit gestern?“ liest nur das Delta. |
 | 🎯 **Prioritäts-Triage** | 🔴 dringend · 🟡 diese Woche · ⚪ Backlog – plus ABC-Delegation (selbst / delegieren / automatisieren 🤖). |
-| ⛔ **Wiedervorlage mit Alterung** | Wartende Punkte tragen ein „offen seit"-Datum. Ab ca. einer Woche schlägt der Skill aktives Nachfassen vor. |
+| ⛔ **Wiedervorlage mit Alterung** | Wartende Punkte tragen ein „offen seit“-Datum. Ab ca. einer Woche schlägt der Skill aktives Nachfassen vor. |
 | 📤 **Übergabe-Protokoll** | Todos gelten erst als verarbeitet, wenn sie übergeben sind: privat → Apple Reminders, dienstlich → Cowork. |
 
 ## Wie es funktioniert
@@ -36,7 +36,7 @@ Der Kern sind drei eiserne Regeln und eine Lesestrategie pro Aufnahme-Klasse.
 **Die drei eisernen Regeln**
 
 1. Der Titel sagt nichts über den Inhalt. Eine Aufnahme mit Zeitstempel-Namen ist **ungelesen**, bis ihr Transkript geholt wurde.
-2. „Nichts gefunden" erst, wenn alle Aufnahmen im Zeitraum gelesen wurden – sonst wird die Lücke explizit ausgewiesen.
+2. „Nichts gefunden“ erst, wenn alle Aufnahmen im Zeitraum gelesen wurden – sonst wird die Lücke explizit ausgewiesen.
 3. Vor jeder Abfrage die externe Wissensbasis laden, nach jeder Abfrage dort ergänzen.
 
 **Die Aufnahme-Klassen**
@@ -45,7 +45,7 @@ Der Kern sind drei eiserne Regeln und eine Lesestrategie pro Aufnahme-Klasse.
 |---|---|---|
 | **A: Betitelt** | Name beginnt mit `MM-DD` + KI-Titel | `get_note` → Summary + Action Items. Note leer? → wie B/C behandeln. |
 | **B: Unbenanntes Kurz-Memo** | Name = Zeitstempel, `duration` < 120 000 ms | `get_transcript` **Pflicht**. Billig, immer alle lesen. |
-| **C: Unbenannt, lang** | Name = Zeitstempel, `duration` ≥ 120 000 ms | Erst `get_note`. Leer (`[]`)? → `get_transcript` paginiert; Rest als „ungelesen" ausweisen. |
+| **C: Unbenannt, lang** | Name = Zeitstempel, `duration` ≥ 120 000 ms | Erst `get_note`. Leer (`[]`)? → `get_transcript` paginiert; Rest als „ungelesen“ ausweisen. |
 
 **Technik-Fallen**, die der Skill kennt: `duration` ist in Millisekunden · `get_note` liefert bei unbenannten Aufnahmen oft `[]` (heißt *keine KI-Notiz*, nicht *kein Inhalt*) · `list_files` mit `query` durchsucht nur Namen, nie Inhalte.
 
@@ -98,7 +98,7 @@ Abdeckung: 14/14 Aufnahmen ausgewertet (A: 3 Notes, B: 9 Transkripte, C: 2). Ung
 
 🧠 Neu gelernt:
 - Person: Milli (= Millie) – Assistenz, privat
-- ASR: „Peplexity" → „Perplexity" (sicher)
+- ASR: „Peplexity“ → „Perplexity“ (sicher)
 ```
 
 ## Die Wissensbasis
@@ -108,7 +108,7 @@ Der Skill enthält **nur** das leere Template ([`references/wissensbasis-templat
 **Auflösungsreihenfolge beim Laden** (erste Fundstelle gewinnt):
 
 1. **Arbeitsordner** — `<Arbeitsordner>/plaud/wissensbasis.md` (oder jede `*wissensbasis*.md`). Wird gelesen **und** nach dem Lauf direkt zurückgeschrieben.
-2. **Claude App/Web** — angehängte Datei mit „wissensbasis" im Namen oder Projektwissen. Rückschreiben ist hier nicht möglich → der Skill gibt am Laufende die aktualisierte Datei zur Ablösung aus.
+2. **Claude App/Web** — angehängte Datei mit „wissensbasis“ im Namen oder Projektwissen. Rückschreiben ist hier nicht möglich → der Skill gibt am Laufende die aktualisierte Datei zur Ablösung aus.
 3. **Nichts gefunden** — neue Basis aus dem Template, mit kurzem Hinweis an dich.
 
 Geschrieben wird nur ergänzend: niemals ohne Auftrag kürzen oder löschen, Stand-Datum und Änderungslog bei jedem Lauf fortschreiben, unsichere Einträge mit `(?)`.

@@ -40,4 +40,4 @@ personal-assistant  knowledge-base  task-management  anthropic  deutsch
 ## Weitere Einstellungen
 
 - **Pages:** aktiv über Settings → Pages → Source `Deploy from a branch`, Branch `main`, Ordner `/ (root)`. Deshalb liegt `index.html` im Wurzelverzeichnis. Wer später auf `/docs` umstellt, muss `index.html` und `.nojekyll` dorthin verschieben.
-- **Include in the home page:** Releases und Packages können deaktiviert bleiben; „Website" aktivieren, damit die Landingpage oben rechts verlinkt wird.
+- **Include in the home page:** Releases und Packages können deaktiviert bleiben; „Website“ aktivieren, damit die Landingpage oben rechts verlinkt wird.
