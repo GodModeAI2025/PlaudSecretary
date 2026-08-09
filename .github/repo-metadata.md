@@ -39,5 +39,5 @@ personal-assistant  knowledge-base  task-management  anthropic  deutsch
 
 ## Weitere Einstellungen
 
-- **Pages:** übernimmt der Workflow `.github/workflows/pages.yml` automatisch (inklusive Aktivierung). Nur falls die Organisation das unterbindet: Settings → Pages → Source „Deploy from a branch", Branch `main`, Ordner `/docs`.
+- **Pages:** Settings → Pages → Source **`GitHub Actions`**. Einmalig nötig – ein Workflow-Token darf keine Pages-Site anlegen. Danach deployt `.github/workflows/pages.yml` bei jedem Push auf `main` selbstständig. Alternative ohne Actions: Source „Deploy from a branch", Branch `main`, Ordner `/docs`.
 - **Include in the home page:** Releases und Packages können deaktiviert bleiben; „Website" aktivieren, damit die Landingpage oben rechts verlinkt wird.
