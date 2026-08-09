@@ -129,13 +129,10 @@ PlaudSecretary/
 │   ├── SKILL.md                          # der Skill selbst
 │   └── references/
 │       └── wissensbasis-template.md      # leere Struktur, keine Live-Daten
-├── docs/
-│   ├── index.html                        # Landingpage (GitHub Pages)
-│   └── .nojekyll                         # kein Jekyll-Preprocessing
 ├── .github/
 │   └── repo-metadata.md                  # Description, Topics, Pages-Hinweise
-├── index.html                            # Weiche, falls Pages aus / (root) liefert
-├── .nojekyll
+├── index.html                            # Landingpage – Pages liefert aus / (root)
+├── .nojekyll                             # kein Jekyll-Preprocessing
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
@@ -143,18 +140,9 @@ PlaudSecretary/
 
 ## Landingpage veröffentlichen
 
-Einmalig in den Repo-Einstellungen:
+Die Seite liegt unter **https://godmodeai2025.github.io/PlaudSecretary/** und aktualisiert sich bei jedem Push auf `main`.
 
-> **Settings → Pages → Source: `Deploy from a branch` → Branch `main` → Save**
-
-Als Ordner funktionieren **beide** Optionen:
-
-| Ordner | Was ausgeliefert wird |
-|---|---|
-| `/docs` | `docs/index.html` direkt als Startseite – der kürzeste Weg |
-| `/ (root)` | Das `index.html` im Wurzelverzeichnis leitet auf `docs/` weiter |
-
-Danach liegt die Seite unter `https://godmodeai2025.github.io/PlaudSecretary/` und aktualisiert sich bei jedem Push auf `main`. Die beiden `.nojekyll`-Marker sorgen dafür, dass das HTML ohne Jekyll-Preprocessing durchgereicht wird.
+Konfiguriert ist das über **Settings → Pages → Source: `Deploy from a branch` → Branch `main`, Ordner `/ (root)`**. Deshalb liegt [`index.html`](index.html) im Wurzelverzeichnis und nicht in einem Unterordner – bei dieser Einstellung ist die Repo-Wurzel zugleich die Wurzel der Website. `.nojekyll` reicht das HTML ohne Jekyll-Preprocessing durch.
 
 Ein Actions-Workflow ist bewusst nicht vorgesehen: Der `GITHUB_TOKEN` eines Workflows darf keine Pages-Site anlegen (`Resource not accessible by integration`), die erste Aktivierung bleibt also ohnehin manuell. Branch-Deployment kommt danach ganz ohne Build-Minuten aus.
 

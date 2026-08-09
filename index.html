@@ -3,32 +3,499 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PlaudSecretary</title>
-<!--
-  Weiche für GitHub Pages.
+<title>PlaudSecretary – der Sekretär für deine Plaud-Aufnahmen</title>
+<meta name="description" content="Ein Claude Skill, der jede Plaud-Aufnahme auswertet – auch die unbenannten Kurz-Memos, in denen die Aufgaben stecken. Mit lernender Wissensbasis, Prioritäts-Triage und ausgewiesener Abdeckung.">
 
-  Steht in Settings → Pages als Ordner "/docs", wird diese Datei nie
-  ausgeliefert – dann ist docs/index.html bereits die Startseite.
-  Steht dort "/ (root)", landet der Besucher hier und wird auf die
-  Landingpage weitergeleitet. So funktioniert die Seite bei beiden
-  Einstellungen.
--->
-<link rel="canonical" href="docs/">
-<meta http-equiv="refresh" content="0; url=docs/">
 <style>
-  :root{color-scheme:light dark;--bg:#f3f4f6;--fg:#14181c;--muted:#59636e;--rec:#c22d1e}
-  @media (prefers-color-scheme:dark){:root{--bg:#0d1013;--fg:#e7eaec;--muted:#98a2ab;--rec:#ff5f4c}}
-  body{
-    margin:0;min-height:100vh;display:grid;place-content:center;gap:.75rem;
-    padding:2rem;text-align:center;background:var(--bg);color:var(--fg);
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+/* ============================================================
+   Palette: kühles Papier / Studio-Nacht.
+   Ein einziger Akzent – das Aufnahme-Rot der Record-Leuchte.
+   Teal nur für „gelernt", nie als zweiter Blickfang.
+   ============================================================ */
+:root{
+  --ground:#f3f4f6;
+  --surface:#ffffff;
+  --sunken:#e9ebee;
+  --ink:#14181c;
+  --ink-muted:#59636e;
+  --ink-faint:#8a939d;
+  --hairline:#d9dde1;
+  --hairline-soft:#e6e9ec;
+  --rec:#c22d1e;
+  --rec-wash:#fbecea;
+  --learn:#1c6b67;
+  --shadow:0 1px 1px rgba(20,24,28,.04),0 12px 32px -20px rgba(20,24,28,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0d1013;
+    --surface:#15191d;
+    --sunken:#0a0d10;
+    --ink:#e7eaec;
+    --ink-muted:#98a2ab;
+    --ink-faint:#6b757e;
+    --hairline:#242a30;
+    --hairline-soft:#1c2126;
+    --rec:#ff5f4c;
+    --rec-wash:#26150f;
+    --learn:#4fb5ad;
+    --shadow:0 1px 1px rgba(0,0,0,.4),0 14px 34px -22px rgba(0,0,0,.9);
   }
-  p{margin:0;color:var(--muted);font-size:.9rem}
-  a{color:var(--rec)}
+}
+:root[data-theme="dark"]{
+  --ground:#0d1013;
+  --surface:#15191d;
+  --sunken:#0a0d10;
+  --ink:#e7eaec;
+  --ink-muted:#98a2ab;
+  --ink-faint:#6b757e;
+  --hairline:#242a30;
+  --hairline-soft:#1c2126;
+  --rec:#ff5f4c;
+  --rec-wash:#26150f;
+  --learn:#4fb5ad;
+  --shadow:0 1px 1px rgba(0,0,0,.4),0 14px 34px -22px rgba(0,0,0,.9);
+}
+
+:root{
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --wrap:920px;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;line-height:1.15;letter-spacing:-.022em;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--rec);outline-offset:3px;border-radius:3px}
+
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(1.15rem,4vw,2.25rem)}
+
+/* ---- Abschnitts-Gerüst ---------------------------------- */
+.band{padding:clamp(3.25rem,7vw,5.25rem) 0;border-top:1px solid var(--hairline)}
+.band > .wrap{display:flex;flex-direction:column;gap:1.9rem}
+.band-head{display:flex;flex-direction:column;gap:.7rem;max-width:64ch}
+.label{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--rec);
+}
+h2{font-size:clamp(1.55rem,3.6vw,2.05rem);font-weight:680}
+.band-head p{color:var(--ink-muted)}
+
+/* ---- Hero ------------------------------------------------ */
+.hero{
+  padding:clamp(3rem,8vw,5.5rem) 0 clamp(2.5rem,6vw,4rem);
+  background:var(--surface);
+  border-bottom:1px solid var(--hairline);
+}
+.hero > .wrap{display:flex;flex-direction:column;gap:1.6rem}
+.kicker{
+  display:inline-flex;align-items:center;gap:.6rem;align-self:flex-start;
+  font-family:var(--mono);font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-muted);
+}
+.dot{
+  width:.5rem;height:.5rem;border-radius:50%;background:var(--rec);
+  box-shadow:0 0 0 3px var(--rec-wash);
+  animation:pulse 3.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,72%,100%{opacity:1}84%{opacity:.28}}
+
+.wordmark{
+  font-family:var(--mono);
+  font-size:clamp(2.05rem,6.4vw,3.35rem);
+  font-weight:680;letter-spacing:-.045em;
+}
+.wordmark b{color:var(--rec);font-weight:inherit}
+.tagline{font-size:clamp(1.05rem,2.3vw,1.24rem);color:var(--ink-muted);max-width:52ch}
+
+.cta{display:flex;flex-wrap:wrap;gap:.6rem}
+.btn{
+  display:inline-flex;align-items:center;
+  font-family:var(--mono);font-size:.85rem;font-weight:600;letter-spacing:-.01em;
+  text-decoration:none;padding:.62rem 1.1rem;border-radius:6px;
+  border:1px solid var(--hairline);background:var(--ground);color:var(--ink);
+  transition:border-color .14s ease,color .14s ease;
+}
+.btn:hover{border-color:var(--rec);color:var(--rec)}
+.btn.solid{background:var(--rec);border-color:var(--rec);color:#fff}
+.btn.solid:hover{color:#fff;filter:brightness(1.08)}
+
+/* ---- Die Aufnahmeliste: das Leitmotiv -------------------- */
+.reel{
+  margin:.6rem 0 0;border:1px solid var(--hairline);border-radius:9px;
+  background:var(--sunken);overflow:hidden;box-shadow:var(--shadow);
+}
+.reel-head{
+  display:flex;justify-content:space-between;gap:1rem;
+  padding:.7rem 1.05rem;border-bottom:1px solid var(--hairline);
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);background:var(--surface);
+}
+.reel-list{list-style:none;margin:0;padding:0}
+.row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  padding:.62rem 1.05rem .62rem .8rem;
+  border-bottom:1px solid var(--hairline-soft);
+  font-family:var(--mono);font-size:.83rem;
+  border-left:3px solid transparent;
+}
+.row .dur{color:var(--ink-faint);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row.titled .nm{color:var(--ink-muted)}
+.row.raw{border-left-color:var(--rec);background:var(--rec-wash)}
+.row.raw .nm{color:var(--ink);font-weight:600}
+.row.raw .nm::after{
+  content:"ungelesen";
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--rec);margin-left:.75rem;
+}
+
+.reveal{padding:1.05rem;display:flex;flex-direction:column;gap:.5rem;background:var(--surface)}
+.reveal-label{
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.quote{font-size:.95rem;color:var(--ink);padding-left:.9rem;border-left:2px solid var(--rec)}
+.reveal .quote{animation:surface .7s cubic-bezier(.2,.7,.3,1) both}
+.reveal .quote:nth-of-type(1){animation-delay:.75s}
+.reveal .quote:nth-of-type(2){animation-delay:.95s}
+@keyframes surface{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .reveal .quote{animation:none}
+  .dot{animation:none}
+}
+
+/* ---- Der Vorfall ---------------------------------------- */
+.incident{
+  border:1px solid var(--hairline);border-radius:9px;background:var(--surface);
+  padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:.85rem;box-shadow:var(--shadow);
+}
+.incident p{color:var(--ink-muted)}
+.incident .lost{
+  font-family:var(--mono);font-size:.9rem;color:var(--ink-faint);
+  text-decoration:line-through;text-decoration-color:var(--rec);text-decoration-thickness:1.5px;
+}
+
+/* ---- Regeln --------------------------------------------- */
+.rules{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--hairline);
+  border:1px solid var(--hairline);border-radius:9px;overflow:hidden}
+@media(min-width:760px){.rules{grid-template-columns:repeat(3,1fr)}}
+.rules li{background:var(--surface);padding:1.3rem 1.35rem;display:flex;flex-direction:column;gap:.4rem}
+.rules .num{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;color:var(--rec)}
+.rules strong{font-size:1.02rem;font-weight:650}
+.rules span.txt{color:var(--ink-muted);font-size:.93rem}
+
+/* ---- Tabelle -------------------------------------------- */
+.scroller{overflow-x:auto;border:1px solid var(--hairline);border-radius:9px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:.93rem}
+th,td{text-align:left;padding:.85rem 1.1rem;border-bottom:1px solid var(--hairline-soft);vertical-align:top}
+thead th{
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:600;background:var(--ground);
+}
+tbody tr:last-child td{border-bottom:0}
+td.klasse{white-space:nowrap;font-family:var(--mono);font-size:.86rem;font-weight:600}
+td.detail{color:var(--ink-muted)}
+code{font-family:var(--mono);font-size:.86em;background:var(--sunken);padding:.12em .38em;border-radius:4px}
+
+.aside{
+  border-left:2px solid var(--hairline);padding-left:1.1rem;
+  color:var(--ink-muted);font-size:.93rem;
+}
+.aside b{color:var(--ink);font-weight:650}
+
+/* ---- Fähigkeiten ---------------------------------------- */
+.caps{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--hairline);
+  border:1px solid var(--hairline);border-radius:9px;overflow:hidden}
+@media(min-width:640px){.caps{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:940px){.caps{grid-template-columns:repeat(2,1fr)}}
+.caps li{background:var(--surface);padding:1.15rem 1.3rem;display:flex;flex-direction:column;gap:.3rem}
+.caps h3{font-size:.99rem;font-weight:650}
+.caps p{color:var(--ink-muted);font-size:.92rem}
+
+/* ---- Ausgabe-Beispiel ----------------------------------- */
+.output{display:grid;gap:1.3rem}
+@media(min-width:860px){.output{grid-template-columns:1.1fr .9fr;align-items:start}}
+pre{
+  margin:0;background:var(--sunken);border:1px solid var(--hairline);border-radius:9px;
+  padding:1.05rem 1.15rem;overflow-x:auto;font-family:var(--mono);
+  font-size:.795rem;line-height:1.75;color:var(--ink);
+}
+pre b{color:var(--rec);font-weight:inherit}
+pre i{color:var(--learn);font-style:normal}
+pre .dim{color:var(--ink-faint)}
+.key{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.key li{display:grid;grid-template-columns:2.6rem 1fr;gap:.7rem;align-items:baseline;font-size:.91rem;color:var(--ink-muted)}
+.key .sym{font-family:var(--mono);font-size:.8rem;color:var(--rec);letter-spacing:.02em}
+.key b{color:var(--ink);font-weight:650}
+
+/* ---- Schritte ------------------------------------------- */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:1.5rem}
+.steps li{display:grid;gap:.5rem}
+.steps .step{font-family:var(--mono);font-size:.71rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rec)}
+.steps h3{font-size:1rem;font-weight:650}
+.steps p{color:var(--ink-muted);font-size:.93rem}
+
+/* ---- Wissensbasis --------------------------------------- */
+.chain{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--hairline);
+  border:1px solid var(--hairline);border-radius:9px;overflow:hidden}
+@media(min-width:760px){.chain{grid-template-columns:repeat(3,1fr)}}
+.chain li{background:var(--surface);padding:1.2rem 1.3rem;display:flex;flex-direction:column;gap:.35rem}
+.chain .ord{font-family:var(--mono);font-size:.71rem;letter-spacing:.14em;color:var(--learn)}
+.chain h3{font-size:.99rem;font-weight:650}
+.chain p{color:var(--ink-muted);font-size:.92rem}
+
+/* ---- Grenzen -------------------------------------------- */
+.limits{list-style:none;margin:0;padding:0;display:grid;gap:.9rem;max-width:70ch}
+.limits li{display:grid;grid-template-columns:1.3rem 1fr;gap:.5rem;color:var(--ink-muted);font-size:.95rem}
+.limits li::before{content:"—";color:var(--rec);font-family:var(--mono)}
+
+/* ---- Fuß ------------------------------------------------ */
+footer{border-top:1px solid var(--hairline);background:var(--surface);padding:2.4rem 0 3.4rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:1rem 1.6rem;justify-content:space-between;align-items:center}
+footer p,footer nav{font-family:var(--mono);font-size:.78rem;color:var(--ink-faint)}
+footer nav{display:flex;flex-wrap:wrap;gap:1.1rem}
+footer a{text-decoration:none;color:var(--ink-muted)}
+footer a:hover{color:var(--rec)}
 </style>
+<meta property="og:title" content="PlaudSecretary">
+<meta property="og:description" content="Der Claude Skill, der jede Plaud-Aufnahme liest – auch die namenlosen Kurz-Memos.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='34' fill='%23c22d1e'/></svg>">
 </head>
 <body>
-  <p>PlaudSecretary</p>
-  <p>Weiterleitung zur Landingpage … <a href="docs/">hier entlang</a>, falls nichts passiert.</p>
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker"><span class="dot" aria-hidden="true"></span>Claude Skill · Version 2.1.0</p>
+    <h1 class="wordmark">Plaud<b>Secretary</b></h1>
+    <p class="tagline">Der Sekretär für deine Sprachaufnahmen. Er liest jede einzelne – auch die namenlosen, in denen die Aufgaben stecken.</p>
+    <div class="cta">
+      <a class="btn solid" href="https://github.com/GodModeAI2025/PlaudSecretary">Repository öffnen</a>
+      <a class="btn" href="#einrichten">Einrichten</a>
+      <a class="btn" href="https://github.com/GodModeAI2025/PlaudSecretary/blob/main/plaud-abfrage/SKILL.md">SKILL.md lesen</a>
+    </div>
+
+    <figure class="reel">
+      <figcaption class="reel-head"><span>Aufnahmen · 07.08.2026</span><span>Dauer</span></figcaption>
+      <ol class="reel-list">
+        <li class="row titled"><span class="nm">08-07 Projektabstimmung Netzanschluss</span><span class="dur">4:12</span></li>
+        <li class="row raw"><span class="nm">2026-08-07 14:03:26</span><span class="dur">0:17</span></li>
+        <li class="row raw"><span class="nm">2026-08-07 14:07:11</span><span class="dur">0:09</span></li>
+        <li class="row titled"><span class="nm">08-07 Rückruf Verlag, Korrekturfahne</span><span class="dur">2:38</span></li>
+      </ol>
+      <div class="reveal">
+        <p class="reveal-label">Was in den beiden namenlosen Memos steckte</p>
+        <p class="quote">„…nicht vergessen, der TÜV ist nächsten Monat fällig…"</p>
+        <p class="quote">„…Autoversicherung, da war doch was mit dem Wechseln…"</p>
+      </div>
+    </figure>
+  </div>
+</header>
+
+<section class="band" id="problem">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Das Problem</p>
+      <h2>Der Titel sagt nichts über den Inhalt</h2>
+      <p>Plaud vergibt automatische KI-Titel – aber nur für längere Aufnahmen. Kurze Memos heißen einfach <code>2026-08-07 14:03:26</code>. Wer nach Titeln sucht, übersieht ausgerechnet die Zettel-am-Kühlschrank-Notizen, für die man das Gerät eigentlich benutzt.</p>
+    </div>
+    <div class="incident">
+      <p>Am 09.08.2026 entstand eine Themenübersicht, die nur betitelte Aufnahmen auswertete. Unter den Tisch fielen dabei:</p>
+      <p class="lost">TÜV-Termin vereinbaren · Autoversicherung klären</p>
+      <p>Beide steckten in unbenannten Memos von 17 und 9 Sekunden. Dieser Skill existiert, damit das nicht wieder passiert.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="regeln">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Die Grundlage</p>
+      <h2>Drei eiserne Regeln</h2>
+      <p>Sie sind nicht verhandelbar und stehen vor jedem Workflow.</p>
+    </div>
+    <ol class="rules">
+      <li><span class="num">REGEL 1</span><strong>Titel ist nicht Inhalt</strong><span class="txt">Eine Aufnahme mit Zeitstempel-Namen gilt als ungelesen, bis ihr Transkript geholt wurde.</span></li>
+      <li><span class="num">REGEL 2</span><strong>Keine leere Fehlanzeige</strong><span class="txt">„Nichts gefunden" gibt es nur mit Beleg. Bleibt etwas ungelesen, wird die Lücke benannt.</span></li>
+      <li><span class="num">REGEL 3</span><strong>Wissensbasis zuerst</strong><span class="txt">Vor jeder Abfrage laden, nach jeder Abfrage ergänzen. Die Live-Daten liegen nie im Skill.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band" id="klassen">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Lesestrategie</p>
+      <h2>Drei Aufnahme-Klassen, drei Vorgehen</h2>
+      <p>Jede Aufnahme im Zeitraum wird zuerst klassifiziert. Erst danach entscheidet sich, wie sie gelesen wird.</p>
+    </div>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Klasse</th><th>Erkennung</th><th>Strategie</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="klasse">A · betitelt</td>
+            <td class="detail">Name beginnt mit <code>MM-DD</code> und KI-Titel</td>
+            <td class="detail"><code>get_note</code> liefert Summary und Action Items. Ist die Notiz leer, gilt sie als B oder C.</td>
+          </tr>
+          <tr>
+            <td class="klasse">B · Kurz-Memo</td>
+            <td class="detail">Name ist Zeitstempel, <code>duration</code> unter 120 000 ms</td>
+            <td class="detail"><code>get_transcript</code> ist Pflicht. Billig genug, um ausnahmslos alle zu lesen.</td>
+          </tr>
+          <tr>
+            <td class="klasse">C · lang, unbenannt</td>
+            <td class="detail">Name ist Zeitstempel, <code>duration</code> ab 120 000 ms</td>
+            <td class="detail">Erst <code>get_note</code>. Bleibt sie leer, folgt das paginierte Transkript; der Rest wird als ungelesen ausgewiesen.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="aside"><b>Technik-Fallen, die der Skill kennt:</b> <code>duration</code> zählt in Millisekunden, 38 000 sind 38 Sekunden. <code>get_note</code> liefert bei unbenannten Aufnahmen oft <code>[]</code> – das heißt „keine KI-Notiz", nicht „kein Inhalt". Und <code>list_files</code> mit <code>query</code> durchsucht ausschließlich Namen, niemals Inhalte.</p>
+  </div>
+</section>
+
+<section class="band" id="faehigkeiten">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Was drinsteckt</p>
+      <h2>Vom Diktat zur übergebenen Aufgabe</h2>
+      <p>Der Skill hört nicht beim Zusammenfassen auf. Er priorisiert, delegiert und erinnert sich daran, was er dir beim letzten Mal schon gesagt hat.</p>
+    </div>
+    <ul class="caps">
+      <li><h3>Vollständigkeit erzwungen</h3><p>Jede Aufnahme wird klassifiziert und gelesen. Namenlose Memos landen zwingend im Transkript-Abruf.</p></li>
+      <li><h3>Abdeckung ausgewiesen</h3><p>Jeder Lauf endet mit „X von Y ausgewertet" und benennt, was ungelesen blieb.</p></li>
+      <li><h3>Lernende Wissensbasis</h3><p>Personen, Projekte, Themen-Cluster und Transkriptionsfehler wachsen mit jedem Lauf – extern bei dir.</p></li>
+      <li><h3>Delta-Abfragen</h3><p>Ein Auswertungs-Log kennt den letzten Lauf. „Was ist neu seit gestern?" liest nur das Delta.</p></li>
+      <li><h3>Triage und Delegation</h3><p>Dringend, diese Woche oder Backlog – dazu die Frage, ob du das selbst tun musst, delegieren kannst oder automatisieren solltest.</p></li>
+      <li><h3>Wiedervorlage mit Alterung</h3><p>Wartende Punkte tragen ein „offen seit"-Datum. Ab etwa einer Woche kommt der Vorschlag, nachzufassen.</p></li>
+      <li><h3>Automatisierungs-Radar</h3><p>Wiederkehrende Routine wird als Kandidat für einen eigenen Skill gemeldet, statt sie endlos weiterzulisten.</p></li>
+      <li><h3>Übergabe-Protokoll</h3><p>Aufgaben gelten erst als verarbeitet, wenn sie übergeben sind: privat in Reminders, dienstlich in Cowork.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="band" id="ausgabe">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Das Ergebnis</p>
+      <h2>Scanbar, belegt, mit Quelle</h2>
+      <p>Jede Aufgabe trägt Datum und Uhrzeit ihrer Aufnahme. Unsichere Transkriptionen bleiben als <code>(?)</code> stehen, statt stillschweigend „korrigiert" zu werden.</p>
+    </div>
+    <div class="output">
+<pre><code>Auto
+- [ ] <b>rot</b>   A     HU-Termin bei Reifen Reber vereinbaren   <span class="dim">(07.08., 14:03)</span>
+- [ ] <b>gelb</b>  B     Versicherung bis 30.11. prüfen → Milli?  <span class="dim">(07.08., 14:07)</span>
+
+Firma
+- [ ] <span class="dim">weiß</span>  C 🤖  Belege monatlich exportieren             <span class="dim">(07.08., 14:15)</span>
+
+[Nicht sicher zuordenbar]
+- "…Termin mit Peplexity(?)…" <span class="dim">(08.08.)</span> – Deutung unklar
+
+Abdeckung: 14/14 ausgewertet (A: 3, B: 9, C: 2). Ungelesen: –
+
+<i>Neu gelernt</i>
+- Person: Milli (= Millie) – Assistenz, privat
+- Transkription: „Peplexity" → „Perplexity" (sicher)</code></pre>
+      <ul class="key">
+        <li><span class="sym">rot</span><span><b>dringend</b> – Signalwörter, Fristen oder wartende externe Personen</span></li>
+        <li><span class="sym">gelb</span><span><b>diese Woche</b> – konkreter nächster Schritt ohne Frist</span></li>
+        <li><span class="sym">weiß</span><span><b>Backlog</b> – Konzepte, Ideen, „irgendwann"</span></li>
+        <li><span class="sym">A</span><span><b>nur du selbst</b> – Entscheidungen, Gespräche, Verhandlungen</span></li>
+        <li><span class="sym">B</span><span><b>delegierbar</b> – mit Vorschlag aus dem Personen-Register</span></li>
+        <li><span class="sym">C</span><span><b>Routine</b> – Kandidat für Automatisierung</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="einrichten">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Einrichten</p>
+      <h2>Zwei Minuten, dann läuft es</h2>
+      <p>Voraussetzung ist ein verbundener Plaud-MCP-Server mit den Werkzeugen <code>list_files</code>, <code>get_note</code> und <code>get_transcript</code>.</p>
+    </div>
+    <ol class="steps">
+      <li>
+        <span class="step">Schritt 1</span>
+        <h3>Repository klonen</h3>
+        <pre><code>git clone https://github.com/GodModeAI2025/PlaudSecretary.git</code></pre>
+      </li>
+      <li>
+        <span class="step">Schritt 2</span>
+        <h3>Skill ablegen – Claude Code</h3>
+        <p>Global nach <code>~/.claude/skills/</code>, projektweit nach <code>&lt;projekt&gt;/.claude/skills/</code>.</p>
+        <pre><code>cp -r PlaudSecretary/plaud-abfrage ~/.claude/skills/</code></pre>
+      </li>
+      <li>
+        <span class="step">Alternativ</span>
+        <h3>Claude Desktop oder Web</h3>
+        <p>Ordner packen und in den Skill-Einstellungen hochladen.</p>
+        <pre><code>cd PlaudSecretary &amp;&amp; zip -r plaud-abfrage.zip plaud-abfrage</code></pre>
+      </li>
+      <li>
+        <span class="step">Schritt 3</span>
+        <h3>Einfach fragen</h3>
+        <p>Der Skill greift automatisch, sobald Plaud-Daten berührt werden.</p>
+        <pre><code>Was habe ich diese Woche aufgenommen?
+Gibt es eine Aufnahme zum Thema TÜV?
+Was ist neu seit gestern?</code></pre>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="band" id="wissensbasis">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Deine Daten</p>
+      <h2>Die Wissensbasis bleibt bei dir</h2>
+      <p>Der Skill enthält nur ein leeres Template. Personen, Projekte, Korrekturlisten und das Auswertungs-Log liegen ausschließlich in deinem Arbeitsordner. Gesucht wird in dieser Reihenfolge, die erste Fundstelle gewinnt.</p>
+    </div>
+    <ol class="chain">
+      <li><span class="ord">ZUERST</span><h3>Arbeitsordner</h3><p><code>plaud/wissensbasis.md</code> wird gelesen und nach dem Lauf direkt dort fortgeschrieben.</p></li>
+      <li><span class="ord">SONST</span><h3>App oder Web</h3><p>Angehängte Datei oder Projektwissen. Zurückschreiben geht dort nicht, also wird die aktualisierte Datei am Ende ausgegeben.</p></li>
+      <li><span class="ord">ZULETZT</span><h3>Frischer Start</h3><p>Ist nichts vorhanden, entsteht eine neue Basis aus dem Template – mit kurzem Hinweis an dich.</p></li>
+    </ol>
+    <p class="aside"><b>Schreibregeln:</b> nur ergänzen und aktualisieren, niemals ohne Auftrag kürzen oder löschen. Jeder Lauf schreibt Auswertungs-Log, Änderungslog und Stand-Datum fort. Die <code>.gitignore</code> des Repos hält jede <code>wissensbasis.md</code> bewusst außerhalb der Versionskontrolle.</p>
+  </div>
+</section>
+
+<section class="band" id="grenzen">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="label">Ehrlich bleiben</p>
+      <h2>Was der Skill nicht kann</h2>
+    </div>
+    <ul class="limits">
+      <li>Nicht transkribierte Aufnahmen sind unsichtbar. Der Skill kann die Transkription nicht auslösen – er führt eine Warteliste und erinnert bei jedem Lauf daran.</li>
+      <li>Die Erkennungsqualität bei Kurz-Memos ist begrenzt. Unsichere Deutungen bleiben markiert und werden nie als Fakt behandelt.</li>
+      <li>Ohne bereitgestellte Wissensbasis startet ein Lauf mit dem leeren Template. Die Zuordnungen sind dann spürbar schwächer.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>PlaudSecretary · MIT-Lizenz · © 2026 Mark Zimmermann</p>
+    <nav>
+      <a href="https://github.com/GodModeAI2025/PlaudSecretary">GitHub</a>
+      <a href="https://github.com/GodModeAI2025/PlaudSecretary/blob/main/plaud-abfrage/SKILL.md">SKILL.md</a>
+      <a href="https://github.com/GodModeAI2025/PlaudSecretary/blob/main/CHANGELOG.md">Changelog</a>
+    </nav>
+  </div>
+</footer>
 </body>
 </html>
