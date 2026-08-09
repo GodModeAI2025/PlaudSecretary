@@ -1,0 +1,46 @@
+name: Landingpage veröffentlichen
+
+# Baut docs/ und stellt es als GitHub Pages bereit.
+# `enablement: true` schaltet Pages beim ersten Lauf selbst frei –
+# ein Klick in Settings → Pages ist damit nicht nötig.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Laufende Deployments nicht abbrechen, aber nur eines gleichzeitig zulassen.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pages konfigurieren (und bei Bedarf aktivieren)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: docs/ als Artefakt hochladen
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deployen
+        id: deployment
+        uses: actions/deploy-pages@v4

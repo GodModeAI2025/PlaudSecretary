@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlaudSecretary – der Sekretär für deine Plaud-Aufnahmen</title>
+<meta name="description" content="Ein Claude Skill, der jede Plaud-Aufnahme auswertet – auch die unbenannten Kurz-Memos, in denen der TÜV-Termin steckt. Mit lernender Wissensbasis, Prioritäts-Triage und ausgewiesener Abdeckung.">
+<meta property="og:title" content="PlaudSecretary">
+<meta property="og:description" content="Der Claude Skill, der jede Plaud-Aufnahme liest – auch die unbenannten Drei-Sekunden-Memos.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
+<style>
+:root{
+  --bg:#fbfaf8;
+  --bg-alt:#ffffff;
+  --surface:#ffffff;
+  --border:#e6e2db;
+  --border-strong:#d3cdc3;
+  --text:#1c1a17;
+  --text-soft:#5d574e;
+  --text-faint:#8b8479;
+  --accent:#b4530a;
+  --accent-soft:#fdf3e9;
+  --accent-2:#0b6e6e;
+  --code-bg:#f4f1ec;
+  --shadow:0 1px 2px rgba(28,26,23,.05),0 8px 24px -12px rgba(28,26,23,.18);
+  --radius:14px;
+  --maxw:940px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14130f;
+    --bg-alt:#191813;
+    --surface:#1e1c17;
+    --border:#312e27;
+    --border-strong:#413d34;
+    --text:#f2efe9;
+    --text-soft:#b8b1a5;
+    --text-faint:#8b8479;
+    --accent:#f0a35c;
+    --accent-soft:#2a2118;
+    --accent-2:#5fc3bd;
+    --code-bg:#232019;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14130f;
+  --bg-alt:#191813;
+  --surface:#1e1c17;
+  --border:#312e27;
+  --border-strong:#413d34;
+  --text:#f2efe9;
+  --text-soft:#b8b1a5;
+  --text-faint:#8b8479;
+  --accent:#f0a35c;
+  --accent-soft:#2a2118;
+  --accent-2:#5fc3bd;
+  --code-bg:#232019;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{line-height:1.2;letter-spacing:-.02em;margin:0}
+a{color:inherit}
+code,pre{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+code{font-size:.88em;background:var(--code-bg);padding:.15em .4em;border-radius:5px}
+pre{
+  background:var(--code-bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1rem 1.1rem;
+  overflow-x:auto;
+  font-size:.85rem;
+  line-height:1.6;
+  margin:0;
+}
+pre code{background:none;padding:0;font-size:inherit}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.1rem,4vw,2rem)}
+section{padding:clamp(3rem,7vw,5rem) 0;border-top:1px solid var(--border)}
+section:first-of-type{border-top:0}
+.eyebrow{
+  font-size:.74rem;font-weight:650;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 .85rem;
+}
+h2{font-size:clamp(1.5rem,3.4vw,2rem);margin-bottom:.7rem}
+.lede{color:var(--text-soft);max-width:62ch;margin:0 0 2rem}
+
+/* ---------- hero ---------- */
+header.hero{
+  padding:clamp(3.5rem,9vw,6.5rem) 0 clamp(3rem,7vw,4.5rem);
+  background:
+    radial-gradient(900px 400px at 12% -10%,var(--accent-soft),transparent 70%),
+    linear-gradient(var(--bg-alt),var(--bg));
+  border-bottom:1px solid var(--border);
+}
+.badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.78rem;font-weight:600;color:var(--accent);
+  background:var(--accent-soft);border:1px solid var(--border-strong);
+  padding:.32rem .78rem;border-radius:999px;margin-bottom:1.4rem;
+}
+h1{font-size:clamp(2.3rem,6.5vw,3.6rem);margin-bottom:1rem}
+h1 .sub{display:block;color:var(--accent);font-size:.42em;font-weight:600;letter-spacing:-.01em;margin-top:.8rem}
+.hero p.tagline{font-size:clamp(1.05rem,2.4vw,1.22rem);color:var(--text-soft);max-width:56ch;margin:0 0 2rem}
+.cta{display:flex;flex-wrap:wrap;gap:.7rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  text-decoration:none;font-weight:600;font-size:.95rem;
+  padding:.7rem 1.25rem;border-radius:10px;border:1px solid var(--border-strong);
+  background:var(--surface);color:var(--text);transition:transform .12s ease,border-color .12s ease;
+}
+.btn:hover{transform:translateY(-1px);border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary,
+:root:not([data-theme="light"]) .btn.primary{color:#1a1509}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn.primary{color:#fff}}
+
+/* ---------- problem ---------- */
+.problem{
+  background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);
+  border-radius:var(--radius);padding:1.5rem 1.6rem;box-shadow:var(--shadow);
+}
+.problem p{margin:0 0 .9rem}
+.problem p:last-child{margin-bottom:0}
+.strike{color:var(--text-faint);text-decoration:line-through}
+
+/* ---------- rules ---------- */
+.rules{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:0;padding:0;list-style:none;counter-reset:r}
+.rules li{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.3rem 1.35rem;box-shadow:var(--shadow);counter-increment:r;
+}
+.rules li::before{
+  content:counter(r);
+  display:flex;align-items:center;justify-content:center;
+  width:1.9rem;height:1.9rem;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);
+  font-weight:700;font-size:.9rem;margin-bottom:.85rem;
+  border:1px solid var(--border-strong);
+}
+.rules strong{display:block;margin-bottom:.35rem;font-size:1.02rem}
+.rules span{color:var(--text-soft);font-size:.93rem}
+
+/* ---------- features ---------- */
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(255px,1fr))}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.3rem 1.35rem;box-shadow:var(--shadow);
+}
+.card .ico{font-size:1.4rem;line-height:1;display:block;margin-bottom:.7rem}
+.card h3{font-size:1.02rem;margin-bottom:.35rem}
+.card p{margin:0;color:var(--text-soft);font-size:.93rem}
+
+/* ---------- table ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{text-align:left;padding:.85rem 1.1rem;border-bottom:1px solid var(--border);vertical-align:top}
+thead th{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);font-weight:650;background:var(--bg-alt)}
+tbody tr:last-child td{border-bottom:0}
+td:first-child{white-space:nowrap;font-weight:600}
+
+/* ---------- output sample ---------- */
+.sample{display:grid;gap:1.2rem;grid-template-columns:1fr}
+@media(min-width:820px){.sample{grid-template-columns:1.15fr .85fr;align-items:start}}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:.75rem}
+.legend li{display:flex;gap:.7rem;align-items:flex-start;font-size:.92rem;color:var(--text-soft)}
+.legend b{color:var(--text);font-weight:650}
+.legend .k{flex:0 0 1.6rem;text-align:center;font-size:1rem}
+
+/* ---------- steps ---------- */
+.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+.steps li{display:grid;grid-template-columns:2.1rem 1fr;gap:.95rem;align-items:start;counter-increment:s}
+.steps li::before{
+  content:counter(s);
+  display:flex;align-items:center;justify-content:center;
+  width:2.1rem;height:2.1rem;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);border:1px solid var(--border-strong);
+  font-weight:700;font-size:.9rem;
+}
+.steps h3{font-size:1rem;margin-bottom:.3rem}
+.steps p{margin:0 0 .7rem;color:var(--text-soft);font-size:.93rem}
+
+/* ---------- note ---------- */
+.note{
+  border:1px dashed var(--border-strong);border-radius:var(--radius);
+  padding:1.1rem 1.3rem;color:var(--text-soft);font-size:.93rem;background:var(--bg-alt);
+}
+.note strong{color:var(--text)}
+
+/* ---------- limits ---------- */
+.limits{list-style:none;margin:0;padding:0;display:grid;gap:.85rem}
+.limits li{display:flex;gap:.75rem;color:var(--text-soft);font-size:.95rem}
+.limits li::before{content:"—";color:var(--accent);flex:0 0 auto}
+
+/* ---------- footer ---------- */
+footer{
+  border-top:1px solid var(--border);padding:2.5rem 0 3.5rem;
+  color:var(--text-faint);font-size:.88rem;background:var(--bg-alt);
+}
+footer a{color:var(--text-soft);text-decoration:none;border-bottom:1px solid var(--border-strong)}
+footer a:hover{color:var(--accent);border-color:var(--accent)}
+.footrow{display:flex;flex-wrap:wrap;gap:1.2rem;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">🎙️ Claude Skill · v2.1.0</span>
+    <h1>PlaudSecretary<span class="sub">Der Sekretär für deine Plaud-Aufnahmen.</span></h1>
+    <p class="tagline">Ein Claude Skill, der <em>jede</em> Aufnahme liest – auch die unbenannten Drei-Sekunden-Memos, in denen der TÜV-Termin steckt.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/GodModeAI2025/PlaudSecretary">Auf GitHub ansehen</a>
+      <a class="btn" href="#installation">Installation</a>
+      <a class="btn" href="https://github.com/GodModeAI2025/PlaudSecretary/blob/main/plaud-abfrage/SKILL.md">SKILL.md lesen</a>
+    </div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="wrap">
+    <p class="eyebrow">Das Problem</p>
+    <h2>Der Titel sagt nichts über den Inhalt</h2>
+    <p class="lede">Plaud vergibt automatische KI-Titel – aber nur für längere Aufnahmen. Kurze Memos heißen einfach <code>2026-08-07 16:03:26</code>. Wer nach Titeln sucht, übersieht genau die Zettel-am-Kühlschrank-Notizen, für die man das Gerät eigentlich benutzt.</p>
+    <div class="problem">
+      <p>Am <strong>09.08.2026</strong> entstand eine Themenübersicht, die nur betitelte Aufnahmen auswertete. Unter den Tisch fielen dabei:</p>
+      <p class="strike">TÜV-Termin vereinbaren · Autoversicherung klären</p>
+      <p>Beide steckten in unbenannten 3–17-Sekunden-Memos. Dieser Skill existiert, damit das nie wieder passiert.</p>
+    </div>
+  </div>
+</section>
+
+<section id="regeln">
+  <div class="wrap">
+    <p class="eyebrow">Die Grundlage</p>
+    <h2>Drei eiserne Regeln</h2>
+    <p class="lede">Sie sind nicht verhandelbar und stehen vor jedem Workflow.</p>
+    <ol class="rules">
+      <li><strong>Titel ≠ Inhalt</strong><span>Eine Aufnahme mit Zeitstempel-Namen gilt als <em>ungelesen</em>, bis ihr Transkript geholt wurde.</span></li>
+      <li><strong>Keine leeren Fehlanzeigen</strong><span>„Nichts gefunden" gibt es nur mit Beleg. Bleibt etwas ungelesen, wird die Lücke ausgewiesen.</span></li>
+      <li><strong>Wissensbasis zuerst</strong><span>Vor jeder Abfrage laden, nach jeder Abfrage ergänzen. Die Live-Daten liegen niemals im Skill.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="klassen">
+  <div class="wrap">
+    <p class="eyebrow">Lesestrategie</p>
+    <h2>Drei Aufnahme-Klassen, drei Vorgehen</h2>
+    <p class="lede">Jede Aufnahme im Zeitraum wird zuerst klassifiziert – erst danach entscheidet sich, wie sie gelesen wird.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Klasse</th><th>Erkennung</th><th>Strategie</th></tr></thead>
+        <tbody>
+          <tr><td>A · Betitelt</td><td>Name beginnt mit <code>MM-DD</code> + KI-Titel</td><td><code>get_note</code> → Summary und Action Items. Note leer? → wie B/C behandeln.</td></tr>
+          <tr><td>B · Kurz-Memo</td><td>Name = Zeitstempel, <code>duration</code> &lt; 120 000 ms</td><td><code>get_transcript</code> ist <strong>Pflicht</strong>. Billig – es werden immer alle gelesen.</td></tr>
+          <tr><td>C · Unbenannt, lang</td><td>Name = Zeitstempel, <code>duration</code> ≥ 120 000 ms</td><td>Erst <code>get_note</code>. Leer (<code>[]</code>)? → <code>get_transcript</code> paginiert; Rest als „ungelesen" ausweisen.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:1.2rem"><strong>Technik-Fallen, die der Skill kennt:</strong> <code>duration</code> ist in Millisekunden (38000 = 38 s) · <code>get_note</code> liefert bei unbenannten Aufnahmen oft <code>[]</code> – das heißt <em>keine KI-Notiz</em>, nicht <em>kein Inhalt</em> · <code>list_files</code> mit <code>query</code> durchsucht nur Namen, nie Inhalte.</p>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <p class="eyebrow">Was drinsteckt</p>
+    <h2>Vom Diktat zur übergebenen Aufgabe</h2>
+    <p class="lede">Der Skill hört nicht beim Zusammenfassen auf – er priorisiert, delegiert und merkt sich, was er dir beim letzten Mal schon gesagt hat.</p>
+    <div class="grid">
+      <div class="card"><span class="ico">🔍</span><h3>Vollständigkeit erzwungen</h3><p>Jede Aufnahme wird klassifiziert und gelesen. Unbenannte Memos landen zwingend im Transkript-Abruf.</p></div>
+      <div class="card"><span class="ico">📊</span><h3>Abdeckung ausgewiesen</h3><p>Jeder Lauf endet mit „X von Y Aufnahmen ausgewertet" und benennt, was ungelesen blieb.</p></div>
+      <div class="card"><span class="ico">🧠</span><h3>Lernende Wissensbasis</h3><p>Personen, Projekte, Themen-Cluster und ASR-Korrekturen wachsen mit jedem Lauf – extern bei dir.</p></div>
+      <div class="card"><span class="ico">🔁</span><h3>Delta-Abfragen</h3><p>Ein Auswertungs-Log kennt den letzten Lauf. „Was ist neu seit gestern?" liest nur das Delta.</p></div>
+      <div class="card"><span class="ico">🎯</span><h3>Prioritäts-Triage &amp; ABC</h3><p>🔴 dringend · 🟡 diese Woche · ⚪ Backlog. Dazu: selbst erledigen, delegieren oder automatisieren.</p></div>
+      <div class="card"><span class="ico">⛔</span><h3>Wiedervorlage mit Alterung</h3><p>Wartende Punkte tragen ein „offen seit"-Datum. Ab etwa einer Woche kommt der Vorschlag nachzufassen.</p></div>
+      <div class="card"><span class="ico">🤖</span><h3>Automatisierungs-Radar</h3><p>Wiederkehrende Routine-Aufgaben werden als Kandidaten für Skill oder Agent gemeldet, statt sie ewig zu listen.</p></div>
+      <div class="card"><span class="ico">📤</span><h3>Übergabe-Protokoll</h3><p>Todos gelten erst als verarbeitet, wenn sie übergeben sind: privat in Apple Reminders, dienstlich in Cowork.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="ausgabe">
+  <div class="wrap">
+    <p class="eyebrow">So sieht das Ergebnis aus</p>
+    <h2>Scanbar, belegt, mit Quelle</h2>
+    <p class="lede">Jede Aufgabe trägt Datum und Uhrzeit ihrer Aufnahme. Unsichere Transkriptionen bleiben als <code>(?)</code> stehen, statt still „korrigiert" zu werden.</p>
+    <div class="sample">
+<pre><code>Auto
+- [ ] 🔴 A · HU-Termin bei Reifen Reber vereinbaren      (07.08., 14:03)
+- [ ] 🟡 B · Versicherung: Wechsel bis 30.11. prüfen → Milli?  (07.08., 14:07)
+
+Firma
+- [ ] ⚪ C 🤖 · Belege monatlich exportieren             (07.08., 14:15)
+
+[Nicht sicher zuordenbar]
+- "…Termin mit Peplexity(?)…" (08.08.) – Deutung unklar
+
+Abdeckung: 14/14 ausgewertet (A: 3, B: 9, C: 2). Ungelesen: –
+
+🧠 Neu gelernt:
+- Person: Milli (= Millie) – Assistenz, privat
+- ASR: „Peplexity" → „Perplexity" (sicher)</code></pre>
+      <ul class="legend">
+        <li><span class="k">🔴</span><span><b>dringend</b> – Signalwörter, Fristen oder wartende externe Personen</span></li>
+        <li><span class="k">🟡</span><span><b>diese Woche</b> – konkreter nächster Schritt ohne Frist</span></li>
+        <li><span class="k">⚪</span><span><b>Backlog</b> – Konzepte, Ideen, „irgendwann"</span></li>
+        <li><span class="k">A</span><span><b>nur du selbst</b> – Entscheidungen, Gespräche, Verhandlungen</span></li>
+        <li><span class="k">B</span><span><b>delegierbar</b> – mit Vorschlag aus dem Personen-Register</span></li>
+        <li><span class="k">C</span><span><b>Routine</b> – 🤖 Kandidat für Automatisierung</span></li>
+        <li><span class="k">⛔</span><span><b>blockiert</b> – die Abhängigkeit wird benannt, nicht verschwiegen</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="installation">
+  <div class="wrap">
+    <p class="eyebrow">Loslegen</p>
+    <h2>Installation in zwei Minuten</h2>
+    <p class="lede">Voraussetzung: ein verbundener Plaud-MCP-Server mit den Tools <code>list_files</code>, <code>get_note</code> und <code>get_transcript</code>.</p>
+    <ol class="steps">
+      <li>
+        <div>
+          <h3>Repository klonen</h3>
+          <pre><code>git clone https://github.com/GodModeAI2025/PlaudSecretary.git</code></pre>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Skill ablegen – Claude Code</h3>
+          <p>Global nach <code>~/.claude/skills/</code>, projektweit nach <code>&lt;projekt&gt;/.claude/skills/</code>.</p>
+          <pre><code>cp -r PlaudSecretary/plaud-abfrage ~/.claude/skills/</code></pre>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Alternativ – Claude Desktop oder Web</h3>
+          <p>Ordner packen und in den Skill-Einstellungen hochladen.</p>
+          <pre><code>cd PlaudSecretary &amp;&amp; zip -r plaud-abfrage.zip plaud-abfrage</code></pre>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Einfach fragen</h3>
+          <p>Der Skill zieht automatisch, sobald Plaud-Daten berührt werden.</p>
+          <pre><code>Was habe ich diese Woche aufgenommen?
+Gibt es eine Aufnahme zum Thema TÜV?
+Was ist neu seit gestern?</code></pre>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="wissensbasis">
+  <div class="wrap">
+    <p class="eyebrow">Deine Daten</p>
+    <h2>Die Wissensbasis bleibt bei dir</h2>
+    <p class="lede">Der Skill enthält nur ein leeres Template. Personen, Projekte, ASR-Korrekturen und das Auswertungs-Log liegen ausschließlich in deinem Arbeitsordner.</p>
+    <div class="grid">
+      <div class="card"><span class="ico">1️⃣</span><h3>Arbeitsordner</h3><p><code>&lt;Arbeitsordner&gt;/plaud/wissensbasis.md</code> wird gelesen <em>und</em> nach dem Lauf direkt zurückgeschrieben.</p></div>
+      <div class="card"><span class="ico">2️⃣</span><h3>App oder Web</h3><p>Angehängte Datei oder Projektwissen. Rückschreiben geht dort nicht – der Skill gibt die aktualisierte Datei zur Ablösung aus.</p></div>
+      <div class="card"><span class="ico">3️⃣</span><h3>Nichts gefunden</h3><p>Eine frische Basis entsteht aus dem Template, mit kurzem Hinweis an dich.</p></div>
+    </div>
+    <p class="note" style="margin-top:1.2rem"><strong>Schreibregeln:</strong> nur ergänzen und aktualisieren – niemals ohne Auftrag kürzen oder löschen. Jeder Lauf schreibt Auswertungs-Log, Änderungslog und Stand-Datum fort. Die <code>.gitignore</code> des Repos hält jede <code>wissensbasis.md</code> bewusst außerhalb der Versionskontrolle.</p>
+  </div>
+</section>
+
+<section id="grenzen">
+  <div class="wrap">
+    <p class="eyebrow">Ehrlich bleiben</p>
+    <h2>Was der Skill nicht kann</h2>
+    <ul class="limits">
+      <li>Nicht transkribierte Aufnahmen sind unsichtbar. Der Skill kann Transkription nicht auslösen – er führt eine Warteliste und erinnert bei jedem Lauf.</li>
+      <li>Die ASR-Qualität bei Kurz-Memos ist begrenzt. Unsichere Deutungen bleiben mit <code>(?)</code> markiert und werden nie als Fakt behandelt.</li>
+      <li>Ohne bereitgestellte Wissensbasis startet ein Lauf mit dem leeren Template – die Zuordnungen sind dann schwächer.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footrow">
+    <span>PlaudSecretary · MIT-Lizenz · © 2026 Mark Zimmermann</span>
+    <span>
+      <a href="https://github.com/GodModeAI2025/PlaudSecretary">GitHub</a> ·
+      <a href="https://github.com/GodModeAI2025/PlaudSecretary/blob/main/plaud-abfrage/SKILL.md">SKILL.md</a> ·
+      <a href="https://github.com/GodModeAI2025/PlaudSecretary/blob/main/CHANGELOG.md">Changelog</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Live-Wissensbasis und Aufnahme-Inhalte gehören NICHT ins Repo
+plaud/
+**/wissensbasis.md
+*wissensbasis*.md
+!plaud-abfrage/references/wissensbasis-template.md
+
+# Build-Artefakte
+*.zip
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
