@@ -5,7 +5,7 @@
 [![Skill Version](https://img.shields.io/badge/skill-v2.1.0-0b7285)](plaud-abfrage/SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-d97706)](https://code.claude.com/docs)
-[![Landing Page](https://img.shields.io/badge/Landingpage-GitHub%20Pages-2b8a3e)](https://godmodeai2025.github.io/PlaudSecretary/)
+[![Landingpage](https://img.shields.io/badge/Landingpage-docs%2Findex.html-2b8a3e)](docs/index.html)
 
 ---
 
