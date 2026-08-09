@@ -133,7 +133,6 @@ PlaudSecretary/
 │   ├── index.html                        # Landingpage (GitHub Pages)
 │   └── .nojekyll                         # kein Jekyll-Preprocessing
 ├── .github/
-│   ├── workflows/pages.yml               # deployt docs/ und aktiviert Pages
 │   └── repo-metadata.md                  # Description, Topics, Pages-Hinweise
 ├── CHANGELOG.md
 ├── LICENSE
@@ -142,11 +141,13 @@ PlaudSecretary/
 
 ## Landingpage veröffentlichen
 
-**Einmalig von Hand:** **Settings → Pages → Source: `GitHub Actions`**. Dieser eine Schritt lässt sich nicht automatisieren – der `GITHUB_TOKEN` eines Workflows darf eine Pages-Site nicht anlegen (`Resource not accessible by integration`), dafür braucht es Repo-Admin-Rechte.
+Einmalig in den Repo-Einstellungen:
 
-Danach übernimmt [`.github/workflows/pages.yml`](.github/workflows/pages.yml): Er läuft bei jedem Push auf `main`, der `docs/` berührt, und deployt den Ordner. Manuell anstoßen geht über **Actions → Landingpage veröffentlichen → Run workflow**. Die Seite liegt dann unter `https://godmodeai2025.github.io/PlaudSecretary/`.
+> **Settings → Pages → Source: `Deploy from a branch` → Branch `main`, Ordner `/docs` → Save**
 
-Wer lieber ganz ohne Actions auskommt: **Settings → Pages → Source: Deploy from a branch → Branch `main`, Ordner `/docs`**. Dafür liegt `docs/.nojekyll` bereit, damit die Seite ohne Jekyll-Preprocessing ausgeliefert wird.
+Danach liegt die Seite unter `https://godmodeai2025.github.io/PlaudSecretary/` und aktualisiert sich bei jedem Push auf `main`. `docs/.nojekyll` sorgt dafür, dass das HTML ohne Jekyll-Preprocessing ausgeliefert wird.
+
+Ein Actions-Workflow ist dafür bewusst nicht vorgesehen: Der `GITHUB_TOKEN` eines Workflows darf keine Pages-Site anlegen (`Resource not accessible by integration`), die erste Aktivierung bleibt also ohnehin ein manueller Schritt. Branch-Deployment kommt danach ganz ohne Build-Minuten aus.
 
 ## Mitwirken
 
