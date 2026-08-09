@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlaudSecretary</title>
+<!--
+  Weiche für GitHub Pages.
+
+  Steht in Settings → Pages als Ordner "/docs", wird diese Datei nie
+  ausgeliefert – dann ist docs/index.html bereits die Startseite.
+  Steht dort "/ (root)", landet der Besucher hier und wird auf die
+  Landingpage weitergeleitet. So funktioniert die Seite bei beiden
+  Einstellungen.
+-->
+<link rel="canonical" href="docs/">
+<meta http-equiv="refresh" content="0; url=docs/">
+<style>
+  :root{color-scheme:light dark;--bg:#f3f4f6;--fg:#14181c;--muted:#59636e;--rec:#c22d1e}
+  @media (prefers-color-scheme:dark){:root{--bg:#0d1013;--fg:#e7eaec;--muted:#98a2ab;--rec:#ff5f4c}}
+  body{
+    margin:0;min-height:100vh;display:grid;place-content:center;gap:.75rem;
+    padding:2rem;text-align:center;background:var(--bg);color:var(--fg);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  p{margin:0;color:var(--muted);font-size:.9rem}
+  a{color:var(--rec)}
+</style>
+</head>
+<body>
+  <p>PlaudSecretary</p>
+  <p>Weiterleitung zur Landingpage … <a href="docs/">hier entlang</a>, falls nichts passiert.</p>
+</body>
+</html>

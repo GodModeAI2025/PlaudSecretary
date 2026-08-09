@@ -5,7 +5,7 @@
 [![Skill Version](https://img.shields.io/badge/skill-v2.1.0-0b7285)](plaud-abfrage/SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-d97706)](https://code.claude.com/docs)
-[![Landingpage](https://img.shields.io/badge/Landingpage-docs%2Findex.html-2b8a3e)](docs/index.html)
+[![Landingpage](https://img.shields.io/badge/Landingpage-live-2b8a3e)](https://godmodeai2025.github.io/PlaudSecretary/)
 
 ---
 
@@ -134,6 +134,8 @@ PlaudSecretary/
 │   └── .nojekyll                         # kein Jekyll-Preprocessing
 ├── .github/
 │   └── repo-metadata.md                  # Description, Topics, Pages-Hinweise
+├── index.html                            # Weiche, falls Pages aus / (root) liefert
+├── .nojekyll
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
@@ -143,11 +145,18 @@ PlaudSecretary/
 
 Einmalig in den Repo-Einstellungen:
 
-> **Settings → Pages → Source: `Deploy from a branch` → Branch `main`, Ordner `/docs` → Save**
+> **Settings → Pages → Source: `Deploy from a branch` → Branch `main` → Save**
 
-Danach liegt die Seite unter `https://godmodeai2025.github.io/PlaudSecretary/` und aktualisiert sich bei jedem Push auf `main`. `docs/.nojekyll` sorgt dafür, dass das HTML ohne Jekyll-Preprocessing ausgeliefert wird.
+Als Ordner funktionieren **beide** Optionen:
 
-Ein Actions-Workflow ist dafür bewusst nicht vorgesehen: Der `GITHUB_TOKEN` eines Workflows darf keine Pages-Site anlegen (`Resource not accessible by integration`), die erste Aktivierung bleibt also ohnehin ein manueller Schritt. Branch-Deployment kommt danach ganz ohne Build-Minuten aus.
+| Ordner | Was ausgeliefert wird |
+|---|---|
+| `/docs` | `docs/index.html` direkt als Startseite – der kürzeste Weg |
+| `/ (root)` | Das `index.html` im Wurzelverzeichnis leitet auf `docs/` weiter |
+
+Danach liegt die Seite unter `https://godmodeai2025.github.io/PlaudSecretary/` und aktualisiert sich bei jedem Push auf `main`. Die beiden `.nojekyll`-Marker sorgen dafür, dass das HTML ohne Jekyll-Preprocessing durchgereicht wird.
+
+Ein Actions-Workflow ist bewusst nicht vorgesehen: Der `GITHUB_TOKEN` eines Workflows darf keine Pages-Site anlegen (`Resource not accessible by integration`), die erste Aktivierung bleibt also ohnehin manuell. Branch-Deployment kommt danach ganz ohne Build-Minuten aus.
 
 ## Mitwirken
 
