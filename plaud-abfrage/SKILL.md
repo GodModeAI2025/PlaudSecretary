@@ -55,7 +55,7 @@ Am 09.08.2026 wurde eine Themenübersicht erstellt, die nur betitelte Aufnahmen 
 - **Themen-Cluster** aus der externen Wissensbasis verwenden; neue Themen dort ergänzen statt Sammelbecken "Sonstiges" aufzublähen.
 - **Personen:** Namen über das Personen-Register auflösen (Milli = Millie = dieselbe Person). Unbekannte Namen → in "Neu gelernt" aufnehmen.
 - **ASR-Fehler:** Offensichtliche Transkriptionsfehler über die Korrekturliste auflösen. Neue Verdachtsfälle mit `(?)` markieren, nie stillschweigend "korrigieren" und als Fakt ausgeben.
-- **Dienstlich vs. privat:** EnBW-/Projekt-Themen = dienstlich; Auto, Firma (eigene GmbH/Auflösung), Familie, Bücher = privat/eigen. Im Zweifel Kontext der Nachbar-Memos nutzen.
+- **Dienstlich vs. privat:** Dienstliche-/Projekt-Themen = dienstlich; Auto, Firma (eigene GmbH/Auflösung), Familie, Bücher = privat/eigen. Im Zweifel Kontext der Nachbar-Memos nutzen.
 - **Keine Erfindungen:** Nur zuordnen, was belegbar in Note/Transkript steht. Vermutungen als solche kennzeichnen.
 
 ## Ausgabeformat
@@ -104,7 +104,7 @@ Statusmarker im Fließtext: ⛔ blockiert durch X (Abhängigkeit benennen), ❓ 
 
 ## Übergabe-Protokoll (Handoff, v1.1)
 
-Todos sind erst "verarbeitet", wenn sie übergeben wurden. Ziel-Systeme nach Sphäre: **privat → Apple Reminders** (Liste je Cluster), **dienstlich → EnBW Cowork** (bzw. dortige Aufgabenpflege). Auf Wunsch des Nutzers Reminders direkt per Tool anlegen (mit Priorität + Quelle im Notizfeld). Übergebene Todos im Auswertungs-Log als "übertragen" führen, damit sie bei der nächsten Abfrage nicht erneut als offen erscheinen.
+  Todos sind erst "verarbeitet", wenn sie übergeben wurden. Ziel-Systeme nach Sphäre: **privat → Apple Reminders** (Liste je Cluster), **dienstlich → Claude Cowork** (bzw. dortige Aufgabenpflege). Auf Wunsch des Nutzers Reminders direkt per Tool anlegen (mit Priorität + Quelle im Notizfeld). Übergebene Todos im Auswertungs-Log als "übertragen" führen, damit sie bei der nächsten Abfrage nicht erneut als offen erscheinen.
 
 ## Grenzen (Limitations)
 
