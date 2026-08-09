@@ -142,9 +142,11 @@ PlaudSecretary/
 
 ## Landingpage veröffentlichen
 
-Der Workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) erledigt das selbst: Er läuft bei jedem Push auf `main`, der `docs/` berührt, aktiviert GitHub Pages beim ersten Lauf (`enablement: true`) und deployt den Ordner. Danach liegt die Seite unter `https://godmodeai2025.github.io/PlaudSecretary/`.
+**Einmalig von Hand:** **Settings → Pages → Source: `GitHub Actions`**. Dieser eine Schritt lässt sich nicht automatisieren – der `GITHUB_TOKEN` eines Workflows darf eine Pages-Site nicht anlegen (`Resource not accessible by integration`), dafür braucht es Repo-Admin-Rechte.
 
-Manuell anstoßen lässt er sich über **Actions → Landingpage veröffentlichen → Run workflow**. Falls die Organisation Pages-Aktivierung per Actions unterbindet, hilft der klassische Weg: **Settings → Pages → Source: Deploy from a branch → Branch `main`, Ordner `/docs`**.
+Danach übernimmt [`.github/workflows/pages.yml`](.github/workflows/pages.yml): Er läuft bei jedem Push auf `main`, der `docs/` berührt, und deployt den Ordner. Manuell anstoßen geht über **Actions → Landingpage veröffentlichen → Run workflow**. Die Seite liegt dann unter `https://godmodeai2025.github.io/PlaudSecretary/`.
+
+Wer lieber ganz ohne Actions auskommt: **Settings → Pages → Source: Deploy from a branch → Branch `main`, Ordner `/docs`**. Dafür liegt `docs/.nojekyll` bereit, damit die Seite ohne Jekyll-Preprocessing ausgeliefert wird.
 
 ## Mitwirken
 

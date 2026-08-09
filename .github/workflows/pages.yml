@@ -1,8 +1,11 @@
 name: Landingpage veröffentlichen
 
 # Baut docs/ und stellt es als GitHub Pages bereit.
-# `enablement: true` schaltet Pages beim ersten Lauf selbst frei –
-# ein Klick in Settings → Pages ist damit nicht nötig.
+#
+# Voraussetzung, einmalig von Hand: Settings → Pages → Source „GitHub Actions".
+# Das lässt sich nicht automatisieren – der GITHUB_TOKEN eines Workflows darf
+# keine Pages-Site anlegen (Resource not accessible by integration), dafür
+# braucht es Repo-Admin-Rechte. Ist Pages einmal aktiv, läuft alles Weitere hier.
 
 on:
   push:
@@ -31,10 +34,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pages konfigurieren (und bei Bedarf aktivieren)
+      - name: Pages konfigurieren
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: docs/ als Artefakt hochladen
         uses: actions/upload-pages-artifact@v3
