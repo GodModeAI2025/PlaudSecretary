@@ -10,10 +10,10 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionier
 ## [2.1.0]
 
 ### Hinzugefügt
-- **Wiedervorlage mit Alterung** – wartende Punkte tragen ein „offen seit"-Datum; ab etwa einer Woche schlägt der Skill aktives Nachfassen vor.
+- **Wiedervorlage mit Alterung** – wartende Punkte tragen ein „offen seit“-Datum; ab etwa einer Woche schlägt der Skill aktives Nachfassen vor.
 - **Nachkontrolle** – jeder Lauf vergleicht mit dem Vorlauf: Überhang, Erledigtes, Übertragenes. Dauerläufer werden gekennzeichnet.
 - **ABC-Delegations-Dimension** – A (nur selbst), B (delegierbar, mit Personenvorschlag), C (Routine, 🤖 Automatisierungskandidat).
-- **Aufgabenraster** als Filterkaskade vor der Ausgabe, inklusive Kennzeichnung „vermutlich obsolet".
+- **Aufgabenraster** als Filterkaskade vor der Ausgabe, inklusive Kennzeichnung „vermutlich obsolet“.
 - **Ergebnis- statt Tätigkeits-Formulierung** für alle Todos.
 
 ## [2.0.0]
@@ -26,13 +26,13 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionier
 
 ### Hinzugefügt
 - **Status-Gedächtnis und Delta-Abfragen** – Auswertungs-Log mit letztem Lauf, abgedecktem Zeitraum und Warteliste nicht transkribierter Aufnahmen.
-- **Übergabe-Protokoll** – privat → Apple Reminders, dienstlich → Cowork; übergebene Todos werden im Log als „übertragen" geführt.
+- **Übergabe-Protokoll** – privat → Apple Reminders, dienstlich → Cowork; übergebene Todos werden im Log als „übertragen“ geführt.
 - Prioritäts-Triage 🔴 / 🟡 / ⚪ und Statusmarker ⛔ ❓ ✅.
 
 ## [1.0.0]
 
 ### Hinzugefügt
 - Erstfassung nach dem übersehenen TÜV-Termin vom 09.08.2026.
-- Drei eiserne Regeln: Titel sagt nichts über den Inhalt · „Nichts gefunden" nur mit ausgewiesener Abdeckung · Wissensbasis vor und nach jedem Lauf.
+- Drei eiserne Regeln: Titel sagt nichts über den Inhalt · „Nichts gefunden“ nur mit ausgewiesener Abdeckung · Wissensbasis vor und nach jedem Lauf.
 - Aufnahme-Klassen A/B/C mit je eigener Lesestrategie.
 - Workflow 1 (Übersicht/Rückblick) und Workflow 2 (Begriffs-/Themensuche) inklusive ASR-Varianten.
