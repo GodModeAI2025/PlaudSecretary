@@ -6,6 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-d97706)](https://code.claude.com/docs)
 [![Landingpage](https://img.shields.io/badge/Landingpage-live-2b8a3e)](https://godmodeai2025.github.io/PlaudSecretary/)
+[![Podcast](https://img.shields.io/badge/think%3AAI-Folge%2052%20Exokortex-c22d1e)](https://think-ai.podigee.io/52-exokortex)
 
 ---
 
@@ -51,7 +52,7 @@ Der Kern sind drei eiserne Regeln und eine Lesestrategie pro Aufnahme-Klasse.
 
 ## Installation
 
-**Voraussetzung:** ein Plaud-MCP-Server ist verbunden (Tools `list_files`, `get_note`, `get_transcript`).
+**Voraussetzung:** ein Plaud-MCP-Server ist verbunden (Tools `list_files`, `get_note`, `get_transcript`). Wie diese Anbindung aufgesetzt wird, erklären wir in Folge 52 „Exokortex“ des Podcasts [think:AI](https://think-ai.podigee.io/52-exokortex).
 
 ### Claude Code
 

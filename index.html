@@ -90,6 +90,11 @@ a{color:inherit}
 }
 h2{font-size:clamp(1.55rem,3.6vw,2.05rem);font-weight:680}
 .band-head p{color:var(--ink-muted)}
+/* Fließtext-Links sichtbar machen, ohne die Buttons zu treffen */
+.band-head a,.aside a,.incident a{
+  color:var(--rec);text-decoration:underline;
+  text-underline-offset:3px;text-decoration-thickness:1px;
+}
 
 /* ---- Hero ------------------------------------------------ */
 .hero{
@@ -283,6 +288,7 @@ footer a:hover{color:var(--rec)}
       <a class="btn solid" href="https://github.com/GodModeAI2025/PlaudSecretary">Repository öffnen</a>
       <a class="btn" href="#einrichten">Einrichten</a>
       <a class="btn" href="https://github.com/GodModeAI2025/PlaudSecretary/blob/main/plaud-abfrage/SKILL.md">SKILL.md lesen</a>
+      <a class="btn" href="https://think-ai.podigee.io/52-exokortex">Podcast: Exokortex</a>
     </div>
 
     <figure class="reel">
@@ -425,7 +431,7 @@ Abdeckung: 14/14 ausgewertet (A: 3, B: 9, C: 2). Ungelesen: –
     <div class="band-head">
       <p class="label">Einrichten</p>
       <h2>Zwei Minuten, dann läuft es</h2>
-      <p>Voraussetzung ist ein verbundener Plaud-MCP-Server mit den Werkzeugen <code>list_files</code>, <code>get_note</code> und <code>get_transcript</code>.</p>
+      <p>Voraussetzung ist ein verbundener Plaud-MCP-Server mit den Werkzeugen <code>list_files</code>, <code>get_note</code> und <code>get_transcript</code>. Wie diese Anbindung aufgesetzt wird, erklären wir in Folge 52 „Exokortex“ des Podcasts <a href="https://think-ai.podigee.io/52-exokortex">think:AI</a>.</p>
     </div>
     <ol class="steps">
       <li>
