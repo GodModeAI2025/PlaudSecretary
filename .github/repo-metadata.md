@@ -39,6 +39,5 @@ personal-assistant  knowledge-base  task-management  anthropic  deutsch
 
 ## Weitere Einstellungen
 
-- **Pages:** Settings → Pages → Source **`Deploy from a branch`**, Branch `main`, Ordner `/docs`. Einmalig nötig – ein Workflow-Token darf keine Pages-Site anlegen, die Erstaktivierung ist also in jedem Fall Handarbeit. Danach aktualisiert sich die Seite bei jedem Push auf `main`.
-- **Badge:** Sobald Pages läuft, kann das Landingpage-Badge im README von `docs/index.html` auf `https://godmodeai2025.github.io/PlaudSecretary/` umgestellt werden.
+- **Pages:** aktiv über Settings → Pages → Source `Deploy from a branch`, Branch `main`. Der Ordner darf `/docs` oder `/ (root)` sein – bei `/root` leitet das `index.html` im Wurzelverzeichnis auf `docs/` weiter.
 - **Include in the home page:** Releases und Packages können deaktiviert bleiben; „Website" aktivieren, damit die Landingpage oben rechts verlinkt wird.
