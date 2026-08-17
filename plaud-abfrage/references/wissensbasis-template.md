@@ -22,9 +22,9 @@
 
 ## 1. Themen-Taxonomie
 
-| Cluster | Zugehörige Begriffe/Signale | Sphäre |
-|---|---|---|
-| (Beispiel) Auto | TÜV/HU, Versicherung, Werkstatt | privat |
+| Cluster | Zugehörige Begriffe/Signale |
+|---|---|
+| (Beispiel) Auto | TÜV/HU, Versicherung, Werkstatt |
 
 ## 2. Personen-Register
 
@@ -48,6 +48,24 @@ Regel: Sichere Korrekturen stillschweigend anwenden, unsichere immer mit `(?)` a
 
 - (wird durch Läufe befüllt)
 
-## 6. Änderungslog
+## 6. Zielsysteme
+
+**Aktives Zielsystem:** Todoist. Keine Verzweigung nach Sphäre.
+
+| Cluster | Zielprojekt | Section |
+|---|---|---|
+| | | |
+
+Prioritäts-Mapping:
+Konvention Quellangabe:
+Bekannte Grenzen und Umleitungen:
+
+## 7. Übergabe-Log
+
+| Datum | Anzahl | Cluster | Abweichungen |
+|---|---|---|---|
+| | | | |
+
+## 8. Änderungslog
 
 - [DATUM] – Basis neu aus Template angelegt.

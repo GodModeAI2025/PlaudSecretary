@@ -1,7 +1,7 @@
 ---
 name: plaud-abfrage
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   author: Mark
 description: >-
   Wertet Plaud-Aufnahmen VOLLSTÄNDIG aus – inklusive aller unbenannten Kurz-Memos, deren Inhalt nie im Titel steht. Klassifiziert jede Aufnahme, liest Notes UND Transkripte, ordnet Aufgaben/Themen anhand einer mitwachsenden Wissensbasis (Personen, Projekte, ASR-Korrekturen) korrekt zu und lernt nach jedem Lauf dazu. IMMER verwenden bei: Plaud, Plaud-Aufnahmen, Sprachmemos, Diktate, Aufnahmen auswerten, Themenübersicht aus Aufnahmen, Aufgaben aus Plaud, Wochenrückblick, Tagesrückblick aus Aufnahmen, "was habe ich diktiert/aufgenommen", "gibt es eine Aufnahme zu X", Suche nach Begriffen in Aufnahmen (z. B. TÜV, Versicherung, Termin, Name einer Person). Auch bei einzelnen Nachfragen zu Themen aus früheren Plaud-Auswertungen. Titelsuche allein ist NIEMALS ausreichend – dieser Skill ist Pflicht, sobald Plaud-Daten berührt werden.
@@ -19,19 +19,73 @@ Am 09.08.2026 wurde eine Themenübersicht erstellt, die nur betitelte Aufnahmen 
 
 **Eiserne Regel Nr. 3:** Vor jeder Abfrage die **externe Wissensbasis aus dem Arbeitsordner** laden (Auflösungsreihenfolge siehe unten). Nach jeder Abfrage dort ergänzen. Die Live-Wissensbasis ist NIEMALS Teil des Skills.
 
-## Aufnahme-Klassen und Lesestrategie
+## Werkzeugregeln
 
-| Klasse | Erkennung | Strategie |
+- **`list_files` immer mit `date_from` und `date_to`.** Ohne Datumsfilter
+  entscheidet die Seitengröße über den Umfang. In Lauf 1 verschluckte
+  `page_size: 40` acht Aufnahmen eines einzigen Tages.
+- **`matched` gegen die Zahl tatsächlich gelesener Aufnahmen prüfen**, nicht
+  gegen die Länge der zurückgegebenen Liste. Differenz ≠ 0 heißt: weiterlesen.
+- **`get_transcript` bei Fehler genau einmal wiederholen.** Der Endpunkt liefert
+  sporadisch HTTP 500; der zweite Versuch war in Lauf 1 erfolgreich. Ein
+  unwiederholter Fehlschlag verliert eine Aufnahme stillschweigend.
+- **Leeres Transkript ≠ leere Aufnahme.** `[]` bedeutet „noch nicht
+  transkribiert" → Warteliste, nicht „nichts gesagt".
+- **Klasse C paginieren.** Bei gesetztem `next_cursor` weiterlesen, bis er
+  `null` ist.
+- **Grenzen des Zielsystems nie schätzen.** Anlegen versuchen und die
+  `failures`-Liste auswerten. Eine aus dem Gedächtnis vermutete Plangrenze war
+  in Lauf 1 schlicht falsch.
+
+## Klassifikation
+
+Entscheidend ist **nicht das Namensmuster, sondern ob ein KI-Titel vorliegt.**
+Ein KI-Titel ist ein vom Dienst erzeugter, inhaltlich sprechender Name.
+Alles andere — Zeitstempel, Dateiname, leerer Name — gilt als unbenannt.
+
+| Klasse | Erkennung | Aktion |
 |---|---|---|
-| **A: Betitelt** | Name beginnt mit `MM-DD` + KI-Titel | `get_note` → Summary + Action Items. Note leer? → wie Klasse B/C behandeln. |
-| **B: Unbenanntes Kurz-Memo** | Name = Zeitstempel, `duration` < 120 000 ms | `get_transcript` PFLICHT. Meist 1 Satz = 1–3 Aufgaben. Billig, immer alle lesen. |
-| **C: Unbenannt, lang** | Name = Zeitstempel, `duration` ≥ 120 000 ms | Erst `get_note` versuchen. Leer (`[]`)? → `get_transcript` paginiert (`next_cursor`), bei sehr langen Aufnahmen mindestens Anfang + gezielte Suche, Rest als "ungelesen" ausweisen. |
+| **A** | KI-Titel vorhanden (i. d. R. `MM-DD ` + Titel) | `get_note`. Bei leerer Note Rückfall auf `get_transcript`. |
+| **B** | Kein KI-Titel, Dauer < 120.000 ms | `get_transcript` — **Pflicht, keine Ausnahme** |
+| **C** | Kein KI-Titel, Dauer ≥ 120.000 ms | `get_transcript`, bei Bedarf paginiert über `next_cursor` |
+
+**Bekannte Namensmuster ohne KI-Titel** (alle → B oder C):
+- `YYYY-MM-DD HH:MM:SS` — Hardware-Gerät
+- `AUDIO-YYYY-MM-DD-HH-MM-SS` — Plaud-App
+- Leerer oder rein numerischer Name
+
+Diese Liste ist **nicht abschließend**. Im Zweifel gilt: unbenannt.
+Das `serial_number`-Feld unterscheidet die Quelle und erklärt abweichende
+Namensmuster — es ist kein Klassifikationskriterium.
 
 **Technik-Fallen:**
 - `duration` ist in **Millisekunden** (38000 = 38 s).
 - `get_note` liefert bei unbenannten Aufnahmen oft `[]` – das heißt NICHT "kein Inhalt", sondern "keine KI-Notiz erzeugt". Transkript holen!
 - `list_files` mit `query` durchsucht nur **Namen**, nie Inhalte. Als Vorfilter ok, als Beleg für "gibt es nicht" wertlos.
-- `serial_number` unterscheidet Quellen (Hardware-Gerät vs. App), siehe Wissensbasis.
+
+## Referenz-Aufrufe
+
+### Zeitraum vollständig erfassen
+    list_files(date_from: "2026-08-07", date_to: "2026-08-14")
+    → matched notieren. Diese Zahl ist der Nenner der Abdeckungszeile.
+
+### Klasse A
+    get_note(file_id: "<id>")
+    → leeres Ergebnis? get_transcript(file_id: "<id>")
+
+### Klasse B
+    get_transcript(file_id: "<id>")
+    → []? Auf die Warteliste, nicht als "nichts gefunden" werten.
+    → Fehler? Genau einmal wiederholen.
+
+### Klasse C
+    get_transcript(file_id: "<id>", limit: 50)
+    → next_cursor != null? get_transcript(file_id: "<id>", cursor: "<token>")
+
+### Alternative Transkript-Blöcke
+    block: "transaction"          Standard, Sprecher + Zeitstempel
+    block: "transaction_polish"   KI-bereinigt, gleiche Struktur
+    block: "outline"              Gliederung
 
 ## Workflow 1: Übersicht / Rückblick ("Themen und Aufgaben der letzten N Tage")
 
@@ -55,7 +109,6 @@ Am 09.08.2026 wurde eine Themenübersicht erstellt, die nur betitelte Aufnahmen 
 - **Themen-Cluster** aus der externen Wissensbasis verwenden; neue Themen dort ergänzen statt Sammelbecken "Sonstiges" aufzublähen.
 - **Personen:** Namen über das Personen-Register auflösen (Milli = Millie = dieselbe Person). Unbekannte Namen → in "Neu gelernt" aufnehmen.
 - **ASR-Fehler:** Offensichtliche Transkriptionsfehler über die Korrekturliste auflösen. Neue Verdachtsfälle mit `(?)` markieren, nie stillschweigend "korrigieren" und als Fakt ausgeben.
-- **Dienstlich vs. privat:** Dienstliche-/Projekt-Themen = dienstlich; Auto, Firma (eigene GmbH/Auflösung), Familie, Bücher = privat/eigen. Im Zweifel Kontext der Nachbar-Memos nutzen.
 - **Keine Erfindungen:** Nur zuordnen, was belegbar in Note/Transkript steht. Vermutungen als solche kennzeichnen.
 
 ## Ausgabeformat
@@ -74,6 +127,21 @@ Abdeckung: X/Y Aufnahmen ausgewertet (A: n Notes, B: n Transkripte, C: n). Ungel
 ```
 
 Kompakt bleiben; auf Mobilgeräten zählt Scanbarkeit. Bei Nachfragen zu Einzelthemen nicht die ganze Übersicht wiederholen.
+
+## Abgleich mit dem Zielsystem
+
+Vor jeder Ausgabe von Wiedervorlagen wird der tatsächliche Zustand geprüft.
+
+1. Offene und erledigte Einträge aus dem Zielsystem holen.
+2. Über `quelle_id` zuordnen, ersatzweise über `quelle_datum` und Inhalt.
+3. Erledigte Punkte aus der Wiedervorlage entfernen und in der Wissensbasis
+   als abgeschlossen markieren — mit Erledigungsdatum, weil daraus die
+   realistische Bearbeitungsdauer je Cluster ablesbar wird.
+4. Nur noch tatsächlich offene Punkte altern lassen.
+5. Bereits übergebene Todos **nicht erneut anlegen**.
+
+Ist das Zielsystem nicht erreichbar, wird die Wiedervorlage trotzdem ausgegeben,
+aber mit dem Hinweis „Stand aus Wissensbasis, nicht abgeglichen".
 
 ## Status-Gedächtnis & Delta-Abfragen (v1.1, nach Secretary-Muster)
 
@@ -102,9 +170,66 @@ Jedes Todo erhält bei der Ausgabe eine Priorität:
 
 Statusmarker im Fließtext: ⛔ blockiert durch X (Abhängigkeit benennen), ❓ Klärung nötig, ✅ als erledigt erwähnt. Abhängige Aufgaben nie kommentarlos als frei verfügbar listen.
 
-## Übergabe-Protokoll (Handoff, v1.1)
+## Vorschau vor Übergabe
 
-  Todos sind erst "verarbeitet", wenn sie übergeben wurden. Ziel-Systeme nach Sphäre: **privat → Apple Reminders** (Liste je Cluster), **dienstlich → Claude Cowork** (bzw. dortige Aufgabenpflege). Auf Wunsch des Nutzers Reminders direkt per Tool anlegen (mit Priorität + Quelle im Notizfeld). Übergebene Todos im Auswertungs-Log als "übertragen" führen, damit sie bei der nächsten Abfrage nicht erneut als offen erscheinen.
+Vor jedem Schreibvorgang ins Zielsystem gilt eine zweistufige Abfolge.
+
+**Stufe 1 — Vorschau.** Zieltabelle ausgeben: Was entsteht wo, mit welcher
+Priorität, welchem Fälligkeitsdatum. Nichts schreiben. Bei mehr als zehn
+Einträgen zusätzlich die Summe pro Zielprojekt nennen.
+
+**Stufe 2 — Ausführung.** Erst nach ausdrücklicher Bestätigung. Danach das
+Ergebnis gegen die Vorschau abgleichen und **jede Abweichung benennen** —
+Teilerfolge einer Batch-Operation sind der gefährlichste Fall, weil die
+erfolgreichen Einträge den Fehlschlag optisch überdecken.
+
+Ausnahme: Bei einem einzelnen Todo entfällt die Vorschau.
+
+## Übergabe
+
+**Ein Zielsystem: Todoist.** Keine Verzweigung nach privat, dienstlich oder
+eigen. Todos werden in einem neutralen Zwischenformat erzeugt und vollständig
+dorthin übergeben.
+
+### Todo-Objekt
+
+| Feld | Pflicht | Inhalt |
+|---|---|---|
+| `inhalt` | ja | Als Ergebnis formuliert, nicht als Thema |
+| `quelle_datum` | ja | `YYYY-MM-DD HH:MM` der Aufnahme |
+| `quelle_id` | ja | `file_id` |
+| `cluster` | ja | Themen-Cluster aus der Wissensbasis |
+| `prioritaet` | ja | `rot` · `gelb` · `weiss` |
+| `delegation` | ja | `A` selbst · `B` delegierbar · `C` automatisierbar |
+| `faellig` | nein | Nur bei `rot` oder externem Termindruck |
+| `frist` | nein | Harte Deadline, falls genannt |
+| `unsicher` | nein | ASR-Unsicherheiten, mit `(?)` im Text markiert |
+
+### Idempotenz
+
+`quelle_datum` und `quelle_id` gehören **immer** in das Beschreibungsfeld. Das
+Paar ist der Schlüssel, an dem der nächste Lauf erkennt, ob ein Todo bereits
+übergeben wurde. Ohne diesen Schlüssel legt jeder Folgelauf alles doppelt an.
+
+### Zuordnung
+
+Der `cluster` bestimmt das Zielprojekt, die Abbildung steht in der Wissensbasis
+unter „Zielsysteme". Ist ein Cluster dort nicht hinterlegt, geht das Todo in die
+Inbox und wird in der Ausgabe als nicht zugeordnet ausgewiesen — niemals raten.
+
+Neue Cluster werden als Section im passenden Projekt angelegt, nicht als neues
+Projekt. Die Projektliste bleibt damit stabil und überschaubar.
+
+### Grenzen des Zielsystems
+
+Vor dem ersten Schreiben prüfen, welche Felder unterstützt werden. Nicht
+unterstützte Felder werden **umgeleitet, nicht verworfen** — eine nicht
+setzbare harte Frist gehört in den Titel. Jede Umleitung wird in der
+Wissensbasis unter „Zielsysteme" vermerkt, damit der nächste Lauf sie nicht
+erneut entdecken muss.
+
+Übergebene Todos im Auswertungs-Log als "übertragen" führen, damit sie bei der
+nächsten Abfrage nicht erneut als offen erscheinen.
 
 ## Grenzen (Limitations)
 

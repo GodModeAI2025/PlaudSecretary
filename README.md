@@ -2,7 +2,7 @@
 
 > **Der Sekretär für deine Plaud-Aufnahmen.** Ein Claude Skill, der *jede* Aufnahme liest – auch die unbenannten Drei-Sekunden-Memos, in denen der TÜV-Termin steckt.
 
-[![Skill Version](https://img.shields.io/badge/skill-v2.1.0-0b7285)](plaud-abfrage/SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v2.2.0-0b7285)](plaud-abfrage/SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-d97706)](https://code.claude.com/docs)
 [![Landingpage](https://img.shields.io/badge/Landingpage-live-2b8a3e)](https://godmodeai2025.github.io/PlaudSecretary/)
@@ -28,7 +28,8 @@ Genau das ist am 09.08.2026 passiert: Eine Themenübersicht ließ **TÜV-Termin*
 | 🔁 **Delta-Abfragen** | Ein Auswertungs-Log merkt sich den letzten Lauf. „Was ist neu seit gestern?“ liest nur das Delta. |
 | 🎯 **Prioritäts-Triage** | 🔴 dringend · 🟡 diese Woche · ⚪ Backlog – plus ABC-Delegation (selbst / delegieren / automatisieren 🤖). |
 | ⛔ **Wiedervorlage mit Alterung** | Wartende Punkte tragen ein „offen seit“-Datum. Ab ca. einer Woche schlägt der Skill aktives Nachfassen vor. |
-| 📤 **Übergabe-Protokoll** | Todos gelten erst als verarbeitet, wenn sie übergeben sind: privat → Apple Reminders, dienstlich → Cowork. |
+| 📤 **Übergabe nach Todoist** | Todos gelten erst als verarbeitet, wenn sie übergeben sind. Ein Zielsystem, keine Verzweigung: der Cluster bestimmt das Projekt. Vorschau zuerst, geschrieben wird erst nach Bestätigung. |
+| 🔄 **Abgleich statt Gedächtnis** | Vor jeder Wiedervorlage wird der echte Zustand in Todoist geprüft. Erledigtes verschwindet, Übergebenes wird nie doppelt angelegt – Quelldatum und `file_id` sind der Schlüssel. |
 
 ## Wie es funktioniert
 
@@ -42,11 +43,15 @@ Der Kern sind drei eiserne Regeln und eine Lesestrategie pro Aufnahme-Klasse.
 
 **Die Aufnahme-Klassen**
 
+Entscheidend ist **nicht das Namensmuster, sondern ob ein KI-Titel vorliegt** – alles andere (Zeitstempel, Dateiname, leerer Name) gilt als unbenannt.
+
 | Klasse | Erkennung | Strategie |
 |---|---|---|
-| **A: Betitelt** | Name beginnt mit `MM-DD` + KI-Titel | `get_note` → Summary + Action Items. Note leer? → wie B/C behandeln. |
-| **B: Unbenanntes Kurz-Memo** | Name = Zeitstempel, `duration` < 120 000 ms | `get_transcript` **Pflicht**. Billig, immer alle lesen. |
-| **C: Unbenannt, lang** | Name = Zeitstempel, `duration` ≥ 120 000 ms | Erst `get_note`. Leer (`[]`)? → `get_transcript` paginiert; Rest als „ungelesen“ ausweisen. |
+| **A: Betitelt** | KI-Titel vorhanden (i. d. R. `MM-DD ` + Titel) | `get_note` → Summary + Action Items. Note leer? → `get_transcript`. |
+| **B: Unbenannt, kurz** | Kein KI-Titel, `duration` < 120 000 ms | `get_transcript` **Pflicht, keine Ausnahme**. Billig, immer alle lesen. |
+| **C: Unbenannt, lang** | Kein KI-Titel, `duration` ≥ 120 000 ms | `get_transcript`, paginiert über `next_cursor` bis er `null` ist. |
+
+Bekannte Muster ohne KI-Titel: `2026-08-07 16:03:26` (Hardware-Gerät) · `AUDIO-2026-08-07-16-03-26` (Plaud-App) · leerer oder rein numerischer Name. Die Liste ist bewusst **nicht abschließend** – im Zweifel gilt: unbenannt.
 
 **Technik-Fallen**, die der Skill kennt: `duration` ist in Millisekunden · `get_note` liefert bei unbenannten Aufnahmen oft `[]` (heißt *keine KI-Notiz*, nicht *kein Inhalt*) · `list_files` mit `query` durchsucht nur Namen, nie Inhalte.
 
