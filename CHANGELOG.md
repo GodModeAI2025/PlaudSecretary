@@ -7,6 +7,26 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionier
 
 - Repository-Struktur, README und Landingpage angelegt.
 
+## [2.2.0]
+
+Anlass: Lauf 1 vom 14.08.2026 über 48 Aufnahmen (07.–14.08.). Jeder Punkt behebt
+einen Fehler, der in diesem Lauf real aufgetreten ist.
+
+### Geändert
+- **Klassenerkennung an „kein KI-Titel“ statt an Namensmuster gebunden** – App-Aufnahmen (`AUDIO-*`) fielen zuvor durch das Raster; genau darin steckte die einzige Aufgabe mit harter Frist.
+- **Zweistufige Übergabe** mit Vorschau vor dem Schreiben und Abgleich des Ergebnisses gegen die Vorschau.
+- **Ein einziges Zielsystem: Todoist.** Der `cluster` bestimmt das Zielprojekt, die Abbildung liegt in der Wissensbasis.
+- **Rückkanal** – die Wiedervorlage wird vor der Ausgabe gegen den Zustand im Zielsystem abgeglichen, statt gegen das Gedächtnis der Wissensbasis zu altern.
+
+### Hinzugefügt
+- **Werkzeugregeln** – Datumsfilter verpflichtend, `matched`-Gegenprüfung, genau ein Retry bei Transkript-Fehlern, Paginierung für Klasse C, Grenzen des Zielsystems nie schätzen.
+- **Referenz-Aufrufe** für alle Klassen inklusive alternativer Transkript-Blöcke.
+- **Idempotenzschlüssel** aus Quelldatum und `file_id` im Beschreibungsfeld – ohne ihn legt jeder Folgelauf alles doppelt an.
+- Wissensbasis-Template um **„Zielsysteme“** und **„Übergabe-Log“** erweitert.
+
+### Entfernt
+- Verzweigung nach privat/dienstlich/eigen und das Feld `sphaere` – ersatzlos, inklusive der Zuordnungs-Regel „Dienstlich vs. privat“ und der Spalte „Sphäre“ in der Themen-Taxonomie.
+
 ## [2.1.0]
 
 ### Hinzugefügt
