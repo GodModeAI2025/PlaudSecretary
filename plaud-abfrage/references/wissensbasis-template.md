@@ -69,3 +69,35 @@ Bekannte Grenzen und Umleitungen:
 ## 8. Änderungslog
 
 - [DATUM] – Basis neu aus Template angelegt.
+
+## 9. Auswertungsprofile
+
+Profile stapeln: Standard gilt immer, Cluster-Profile ergänzen, der Auftrag des
+laufenden Gesprächs schlägt beide. Variablen statt kopierter Listen:
+`{{personen}}` · `{{cluster}}` · `{{asr}}` · `{{wiedervorlage}}` ·
+`{{zeitraum}}` · `{{aufnahmedatum}}` · `{{heute}}`.
+
+| Profil | Greift bei | Anweisung |
+|---|---|---|
+| Standard | immer | Aufgaben, Termine, Themen wie im Ausgabeformat. |
+| (Beispiel) Meeting | Cluster „Firma", ≥ 2 Sprecher | Zusätzlich: Entscheidungen, Zusagen (wer, bis wann), offene Fragen. |
+| (Beispiel) Idee | Signalwort „Idee", „Gedanke" | Keine Todos erzeugen. Nur Ideenliste, Formulierung nah am Original. |
+
+## 10. Inhaltsindex
+
+Eine Zeile je gelesener Aufnahme. Startpunkt für Recherchen über die gesamte
+Bibliothek – ersetzt nie das Transkript als Beleg.
+
+| file_id | Datum/Zeit | Dauer | Klasse | Inhalt (1 Satz) | Schlagworte | Cluster | gelesen am |
+|---|---|---|---|---|---|---|---|
+| – | – | – | – | – | – | – | – |
+
+## 11. Lesefreigaben
+
+Gesperrtes wird gelesen (sonst stimmt die Abdeckung nicht), aber nicht zitiert,
+nicht zusammengefasst, nie übergeben. Im Zweifel frei – Sperren entstehen durch
+Eintrag, nicht durch Vermutung.
+
+| Gesperrt (Cluster/Person/file_id) | Umfang | Notiz |
+|---|---|---|
+| – | – | – |

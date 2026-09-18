@@ -2,7 +2,7 @@
 
 > **Der Sekretär für deine Plaud-Aufnahmen.** Ein Claude Skill, der *jede* Aufnahme liest – auch die unbenannten Drei-Sekunden-Memos, in denen der TÜV-Termin steckt.
 
-[![Skill Version](https://img.shields.io/badge/skill-v2.2.0-0b7285)](plaud-abfrage/SKILL.md)
+[![Skill Version](https://img.shields.io/badge/skill-v2.3.0-0b7285)](plaud-abfrage/SKILL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-d97706)](https://code.claude.com/docs)
 [![Landingpage](https://img.shields.io/badge/Landingpage-live-2b8a3e)](https://godmodeai2025.github.io/PlaudSecretary/)
@@ -30,6 +30,11 @@ Genau das ist am 09.08.2026 passiert: Eine Themenübersicht ließ **TÜV-Termin*
 | ⛔ **Wiedervorlage mit Alterung** | Wartende Punkte tragen ein „offen seit“-Datum. Ab ca. einer Woche schlägt der Skill aktives Nachfassen vor. |
 | 📤 **Übergabe nach Todoist** | Todos gelten erst als verarbeitet, wenn sie übergeben sind. Ein Zielsystem, keine Verzweigung: der Cluster bestimmt das Projekt. Vorschau zuerst, geschrieben wird erst nach Bestätigung. |
 | 🔄 **Abgleich statt Gedächtnis** | Vor jeder Wiedervorlage wird der echte Zustand in Todoist geprüft. Erledigtes verschwindet, Übergebenes wird nie doppelt angelegt – Quelldatum und `file_id` sind der Schlüssel. |
+| 📅 **Termine statt nur Todos** | „Termin vereinbaren" ist eine Aufgabe, „Dienstag 10 Uhr" ein Ereignis. Relative Angaben zählen ab dem **Aufnahmedatum**, nicht ab heute. |
+| 📎 **Belegstellen mit Zeitmarke** | Jede Aussage trägt Aufnahme, Uhrzeit und Sekunde im Transkript – bei einer 40-Minuten-Aufnahme ist „steht da irgendwo" keine Quelle. |
+| 🔎 **Recherche über die Bibliothek** | „Was haben wir entschieden, und war jemand dagegen?" – iterativ suchen und lesen, mit sichtbarem Suchprotokoll und aktiver Suche nach Gegenpositionen. |
+| 🗂️ **Auswertungsprofile** | Meeting, Idee, Diktat: pro Cluster eigene Auswertung, stapelbar, mit Variablen auf die Wissensbasis statt kopierter Listen. |
+| 🔒 **Lesefreigaben** | Gesperrte Cluster und Personen werden gelesen, aber nie zitiert oder übergeben. Die Zahl der ausgeklammerten Aufnahmen steht trotzdem in der Abdeckung. |
 
 ## Wie es funktioniert
 
@@ -85,17 +90,22 @@ Was habe ich diese Woche aufgenommen?
 Gibt es eine Aufnahme zum Thema TÜV?
 Was ist neu seit gestern?
 Wochenrückblick aus meinen Plaud-Aufnahmen
+Welche Termine stecken in den Aufnahmen der letzten Woche?
+Was haben wir zur Preisänderung entschieden – und hat jemand widersprochen?
 ```
 
 **Beispiel-Ausgabe**
 
 ```
 Auto
-- [ ] 🔴 A · HU-Termin bei Reifen Reber vereinbaren (07.08., 14:03)
-- [ ] 🟡 B · Autoversicherung: Wechseloption bis 30.11. prüfen → Milli? (07.08., 14:07)
+- [ ] 🔴 A · HU-Termin bei Reifen Reber vereinbaren (07.08., 14:03 · 00:12)
+- [ ] 🟡 B · Autoversicherung: Wechseloption bis 30.11. prüfen → Milli? (07.08., 14:07 · 00:31)
 
 Firma
-- [ ] ⚪ C 🤖 · Belege monatlich exportieren – Automatisierungskandidat (07.08., 14:15)
+- [ ] ⚪ C 🤖 · Belege monatlich exportieren – Automatisierungskandidat (07.08., 14:15 · 01:04)
+
+📅 Termine
+- Di 12.08., 10:00 · Reifen Reber, HU — fix ("nächsten Dienstag", 07.08., 14:03 · 00:24)
 
 [Nicht sicher zuordenbar]
 - "…Termin mit Peplexity(?)…" (08.08.) – Deutung unklar
@@ -109,7 +119,7 @@ Abdeckung: 14/14 Aufnahmen ausgewertet (A: 3 Notes, B: 9 Transkripte, C: 2). Ung
 
 ## Die Wissensbasis
 
-Der Skill enthält **nur** das leere Template ([`references/wissensbasis-template.md`](plaud-abfrage/references/wissensbasis-template.md)). Die Live-Daten – Personen, Projekte, Auswertungs-Log – bleiben ausschließlich bei dir.
+Der Skill enthält **nur** das leere Template ([`references/wissensbasis-template.md`](plaud-abfrage/references/wissensbasis-template.md)). Die Live-Daten – Personen, Projekte, Auswertungs-Log, Auswertungsprofile, Inhaltsindex und Lesefreigaben – bleiben ausschließlich bei dir. Die Wissensbasis ist damit zugleich Gedächtnis *und* Konfiguration: Was bei einer klassischen App in Einstellungen und Datenbank läge, ist hier eine Markdown-Datei in deinem Ordner.
 
 **Auflösungsreihenfolge beim Laden** (erste Fundstelle gewinnt):
 

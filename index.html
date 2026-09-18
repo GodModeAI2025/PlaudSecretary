@@ -281,7 +281,7 @@ footer a:hover{color:var(--rec)}
 <body>
 <header class="hero">
   <div class="wrap">
-    <p class="kicker"><span class="dot" aria-hidden="true"></span>Claude Skill · Version 2.2.0</p>
+    <p class="kicker"><span class="dot" aria-hidden="true"></span>Claude Skill · Version 2.3.0</p>
     <h1 class="wordmark">Plaud<b>Secretary</b></h1>
     <p class="tagline">Der Sekretär für deine Sprachaufnahmen. Er liest jede einzelne – auch die namenlosen, in denen die Aufgaben stecken.</p>
     <div class="cta">
@@ -388,6 +388,11 @@ footer a:hover{color:var(--rec)}
       <li><h3>Automatisierungs-Radar</h3><p>Wiederkehrende Routine wird als Kandidat für einen eigenen Skill gemeldet, statt sie endlos weiterzulisten.</p></li>
       <li><h3>Übergabe nach Todoist</h3><p>Aufgaben gelten erst als verarbeitet, wenn sie übergeben sind. Ein Zielsystem statt zwei – und geschrieben wird erst nach einer Vorschau, die zeigt, was wo entsteht.</p></li>
       <li><h3>Abgleich statt Gedächtnis</h3><p>Vor jeder Wiedervorlage zählt der echte Zustand in Todoist. Erledigtes verschwindet, Übergebenes wird nie ein zweites Mal angelegt.</p></li>
+      <li><h3>Termine statt nur Todos</h3><p>„Termin vereinbaren“ ist eine Aufgabe, „Dienstag 10 Uhr“ ein Ereignis. „Nächsten Dienstag“ zählt ab dem Aufnahmedatum, nicht ab heute.</p></li>
+      <li><h3>Belegstellen mit Zeitmarke</h3><p>Datum, Uhrzeit und Sekunde im Transkript. Bei einer 40-Minuten-Aufnahme ist „steht da irgendwo“ keine Quelle.</p></li>
+      <li><h3>Recherche über die Bibliothek</h3><p>„Was haben wir entschieden, und war jemand dagegen?“ – iterativ suchen und lesen, mit sichtbarem Suchprotokoll und aktiver Suche nach Gegenpositionen.</p></li>
+      <li><h3>Auswertungsprofile</h3><p>Meeting, Idee, Diktat: pro Cluster eine eigene Auswertung, stapelbar – konfiguriert in deiner Wissensbasis, nicht im Skill.</p></li>
+      <li><h3>Lesefreigaben</h3><p>Gesperrte Cluster und Personen werden gelesen, aber nie zitiert oder übergeben. Die Zahl der ausgeklammerten Aufnahmen steht trotzdem in der Abdeckung.</p></li>
     </ul>
   </div>
 </section>
@@ -397,15 +402,18 @@ footer a:hover{color:var(--rec)}
     <div class="band-head">
       <p class="label">Das Ergebnis</p>
       <h2>Scanbar, belegt, mit Quelle</h2>
-      <p>Jede Aufgabe trägt Datum und Uhrzeit ihrer Aufnahme. Unsichere Transkriptionen bleiben als <code>(?)</code> stehen, statt stillschweigend „korrigiert“ zu werden.</p>
+      <p>Jede Aufgabe trägt Datum, Uhrzeit und die Sekunde im Transkript, an der sie gesagt wurde. Unsichere Transkriptionen bleiben als <code>(?)</code> stehen, statt stillschweigend „korrigiert“ zu werden.</p>
     </div>
     <div class="output">
 <pre><code>Auto
-- [ ] <b>rot</b>   A     HU-Termin bei Reifen Reber vereinbaren   <span class="dim">(07.08., 14:03)</span>
-- [ ] <b>gelb</b>  B     Versicherung bis 30.11. prüfen → Milli?  <span class="dim">(07.08., 14:07)</span>
+- [ ] <b>rot</b>   A     HU-Termin bei Reifen Reber vereinbaren   <span class="dim">(07.08., 14:03 · 00:12)</span>
+- [ ] <b>gelb</b>  B     Versicherung bis 30.11. prüfen → Milli?  <span class="dim">(07.08., 14:07 · 00:31)</span>
 
 Firma
-- [ ] <span class="dim">weiß</span>  C 🤖  Belege monatlich exportieren             <span class="dim">(07.08., 14:15)</span>
+- [ ] <span class="dim">weiß</span>  C 🤖  Belege monatlich exportieren             <span class="dim">(07.08., 14:15 · 01:04)</span>
+
+Termine
+- Di 12.08., 10:00  Reifen Reber, HU – fix       <span class="dim">(„nächsten Dienstag“, 07.08.)</span>
 
 [Nicht sicher zuordenbar]
 - "…Termin mit Peplexity(?)…" <span class="dim">(08.08.)</span> – Deutung unklar
