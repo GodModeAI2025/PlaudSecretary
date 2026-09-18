@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PlaudSecretary – der Sekretär für deine Plaud-Aufnahmen</title>
-<meta name="description" content="Ein Claude Skill, der jede Plaud-Aufnahme auswertet – auch die unbenannten Kurz-Memos, in denen die Aufgaben stecken. Mit lernender Wissensbasis, Prioritäts-Triage und ausgewiesener Abdeckung.">
+<title>PlaudSecretary: der Sekretär für deine Plaud-Aufnahmen</title>
+<meta name="description" content="Ein Claude Skill, der jede Plaud-Aufnahme auswertet, auch die unbenannten Kurz-Memos, in denen die Aufgaben stecken. Mit lernender Wissensbasis und ausgewiesener Abdeckung.">
 
 <style>
 /* ============================================================
@@ -283,7 +283,7 @@ footer a:hover{color:var(--rec)}
   <div class="wrap">
     <p class="kicker"><span class="dot" aria-hidden="true"></span>Claude Skill · Version 2.3.0</p>
     <h1 class="wordmark">Plaud<b>Secretary</b></h1>
-    <p class="tagline">Der Sekretär für deine Sprachaufnahmen. Er liest jede einzelne – auch die namenlosen, in denen die Aufgaben stecken.</p>
+    <p class="tagline">Der Sekretär für deine Sprachaufnahmen. Er liest jede einzelne, auch die namenlosen, in denen die Aufgaben stecken.</p>
     <div class="cta">
       <a class="btn solid" href="https://github.com/GodModeAI2025/PlaudSecretary">Repository öffnen</a>
       <a class="btn" href="#einrichten">Einrichten</a>
@@ -313,12 +313,12 @@ footer a:hover{color:var(--rec)}
     <div class="band-head">
       <p class="label">Das Problem</p>
       <h2>Der Titel sagt nichts über den Inhalt</h2>
-      <p>Plaud vergibt automatische KI-Titel – aber nur für längere Aufnahmen. Kurze Memos heißen einfach <code>2026-08-07 14:03:26</code>. Wer nach Titeln sucht, übersieht ausgerechnet die Zettel-am-Kühlschrank-Notizen, für die man das Gerät eigentlich benutzt.</p>
+      <p>Plaud vergibt automatische KI-Titel, aber nur für längere Aufnahmen. Kurze Memos heißen einfach <code>2026-08-07 14:03:26</code>. Wer nach Titeln sucht, übersieht ausgerechnet die Zettel-am-Kühlschrank-Notizen, für die man das Gerät eigentlich benutzt.</p>
     </div>
     <div class="incident">
-      <p>Am 09.08.2026 entstand eine Themenübersicht, die nur betitelte Aufnahmen auswertete. Unter den Tisch fielen dabei:</p>
+      <p>Am 09.08.2026 habe ich mir eine Themenübersicht erstellen lassen. Ausgewertet wurden die betitelten Aufnahmen, sonst keine. Unter den Tisch fielen dabei:</p>
       <p class="lost">TÜV-Termin vereinbaren · Autoversicherung klären</p>
-      <p>Beide steckten in unbenannten Memos von 17 und 9 Sekunden. Dieser Skill existiert, damit das nicht wieder passiert.</p>
+      <p>Beide steckten in unbenannten Memos von 17 und 9 Sekunden. Fast hätte ich den TÜV verpasst, weil ein Titel nach nichts aussah. Dieser Skill existiert, damit das nicht wieder passiert.</p>
     </div>
   </div>
 </section>
@@ -367,7 +367,7 @@ footer a:hover{color:var(--rec)}
         </tbody>
       </table>
     </div>
-    <p class="aside"><b>Technik-Fallen, die der Skill kennt:</b> <code>duration</code> zählt in Millisekunden, 38 000 sind 38 Sekunden. <code>get_note</code> liefert bei unbenannten Aufnahmen oft <code>[]</code> – das heißt „keine KI-Notiz“, nicht „kein Inhalt“. Und <code>list_files</code> mit <code>query</code> durchsucht ausschließlich Namen, niemals Inhalte.</p>
+    <p class="aside"><b>Technik-Fallen, die der Skill kennt:</b> <code>duration</code> zählt in Millisekunden, 38 000 sind 38 Sekunden. <code>get_note</code> liefert bei unbenannten Aufnahmen oft <code>[]</code>, das heißt „keine KI-Notiz“ und nicht „kein Inhalt“. Und <code>list_files</code> mit <code>query</code> durchsucht ausschließlich Namen, niemals Inhalte.</p>
   </div>
 </section>
 
@@ -376,22 +376,22 @@ footer a:hover{color:var(--rec)}
     <div class="band-head">
       <p class="label">Was drinsteckt</p>
       <h2>Vom Diktat zur übergebenen Aufgabe</h2>
-      <p>Der Skill hört nicht beim Zusammenfassen auf. Er priorisiert, delegiert und erinnert sich daran, was er dir beim letzten Mal schon gesagt hat.</p>
+      <p>Zusammenfassen ist der Anfang. Danach sortiert der Skill nach Dringlichkeit, schlägt vor, wer eine Aufgabe übernimmt, und erinnert sich an das, was beim letzten Lauf offen blieb.</p>
     </div>
     <ul class="caps">
       <li><h3>Vollständigkeit erzwungen</h3><p>Jede Aufnahme wird klassifiziert und gelesen. Namenlose Memos landen zwingend im Transkript-Abruf.</p></li>
       <li><h3>Abdeckung ausgewiesen</h3><p>Jeder Lauf endet mit „X von Y ausgewertet“ und benennt, was ungelesen blieb.</p></li>
-      <li><h3>Lernende Wissensbasis</h3><p>Personen, Projekte, Themen-Cluster und Transkriptionsfehler wachsen mit jedem Lauf – extern bei dir.</p></li>
+      <li><h3>Lernende Wissensbasis</h3><p>Personen, Projekte, Themen-Cluster und Transkriptionsfehler wachsen mit jedem Lauf. Gespeichert wird bei dir, nicht im Skill.</p></li>
       <li><h3>Delta-Abfragen</h3><p>Ein Auswertungs-Log kennt den letzten Lauf. „Was ist neu seit gestern?“ liest nur das Delta.</p></li>
-      <li><h3>Triage und Delegation</h3><p>Dringend, diese Woche oder Backlog – dazu die Frage, ob du das selbst tun musst, delegieren kannst oder automatisieren solltest.</p></li>
+      <li><h3>Triage und Delegation</h3><p>Dringend, diese Woche oder Backlog. Dazu die Frage, ob du es selbst tun musst, delegieren kannst oder automatisieren solltest.</p></li>
       <li><h3>Wiedervorlage mit Alterung</h3><p>Wartende Punkte tragen ein „offen seit“-Datum. Ab etwa einer Woche kommt der Vorschlag, nachzufassen.</p></li>
       <li><h3>Automatisierungs-Radar</h3><p>Wiederkehrende Routine wird als Kandidat für einen eigenen Skill gemeldet, statt sie endlos weiterzulisten.</p></li>
-      <li><h3>Übergabe nach Todoist</h3><p>Aufgaben gelten erst als verarbeitet, wenn sie übergeben sind. Ein Zielsystem statt zwei – und geschrieben wird erst nach einer Vorschau, die zeigt, was wo entsteht.</p></li>
+      <li><h3>Übergabe nach Todoist</h3><p>Aufgaben gelten erst als verarbeitet, wenn sie übergeben sind. Ein Zielsystem statt zwei. Geschrieben wird erst nach einer Vorschau, die zeigt, was wo entsteht.</p></li>
       <li><h3>Abgleich statt Gedächtnis</h3><p>Vor jeder Wiedervorlage zählt der echte Zustand in Todoist. Erledigtes verschwindet, Übergebenes wird nie ein zweites Mal angelegt.</p></li>
       <li><h3>Termine statt nur Todos</h3><p>„Termin vereinbaren“ ist eine Aufgabe, „Dienstag 10 Uhr“ ein Ereignis. „Nächsten Dienstag“ zählt ab dem Aufnahmedatum, nicht ab heute.</p></li>
       <li><h3>Belegstellen mit Zeitmarke</h3><p>Datum, Uhrzeit und Sekunde im Transkript. Bei einer 40-Minuten-Aufnahme ist „steht da irgendwo“ keine Quelle.</p></li>
-      <li><h3>Recherche über die Bibliothek</h3><p>„Was haben wir entschieden, und war jemand dagegen?“ – iterativ suchen und lesen, mit sichtbarem Suchprotokoll und aktiver Suche nach Gegenpositionen.</p></li>
-      <li><h3>Auswertungsprofile</h3><p>Meeting, Idee, Diktat: pro Cluster eine eigene Auswertung, stapelbar – konfiguriert in deiner Wissensbasis, nicht im Skill.</p></li>
+      <li><h3>Recherche über die Bibliothek</h3><p>„Was haben wir entschieden, und war jemand dagegen?“ Der Skill sucht und liest iterativ, legt sein Suchprotokoll offen und sucht gezielt nach der Gegenposition.</p></li>
+      <li><h3>Auswertungsprofile</h3><p>Ein Meeting braucht Entscheidungen, ein Ideen-Memo keine Todo-Liste. Pro Cluster eine eigene Auswertung, konfiguriert in deiner Wissensbasis statt im Skill.</p></li>
       <li><h3>Lesefreigaben</h3><p>Gesperrte Cluster und Personen werden gelesen, aber nie zitiert oder übergeben. Die Zahl der ausgeklammerten Aufnahmen steht trotzdem in der Abdeckung.</p></li>
     </ul>
   </div>
@@ -401,7 +401,7 @@ footer a:hover{color:var(--rec)}
   <div class="wrap">
     <div class="band-head">
       <p class="label">Das Ergebnis</p>
-      <h2>Scanbar, belegt, mit Quelle</h2>
+      <h2>Jede Zeile hat ihre Quelle</h2>
       <p>Jede Aufgabe trägt Datum, Uhrzeit und die Sekunde im Transkript, an der sie gesagt wurde. Unsichere Transkriptionen bleiben als <code>(?)</code> stehen, statt stillschweigend „korrigiert“ zu werden.</p>
     </div>
     <div class="output">
@@ -424,12 +424,12 @@ Abdeckung: 14/14 ausgewertet (A: 3, B: 9, C: 2). Ungelesen: –
 - Person: Milli (= Millie) – Assistenz, privat
 - Transkription: „Peplexity“ → „Perplexity“ (sicher)</code></pre>
       <ul class="key">
-        <li><span class="sym">rot</span><span><b>dringend</b> – Signalwörter, Fristen oder wartende externe Personen</span></li>
-        <li><span class="sym">gelb</span><span><b>diese Woche</b> – konkreter nächster Schritt ohne Frist</span></li>
-        <li><span class="sym">weiß</span><span><b>Backlog</b> – Konzepte, Ideen, „irgendwann“</span></li>
-        <li><span class="sym">A</span><span><b>nur du selbst</b> – Entscheidungen, Gespräche, Verhandlungen</span></li>
-        <li><span class="sym">B</span><span><b>delegierbar</b> – mit Vorschlag aus dem Personen-Register</span></li>
-        <li><span class="sym">C</span><span><b>Routine</b> – Kandidat für Automatisierung</span></li>
+        <li><span class="sym">rot</span><span><b>dringend</b>: Signalwörter, Fristen oder wartende externe Personen</span></li>
+        <li><span class="sym">gelb</span><span><b>diese Woche</b>: konkreter nächster Schritt ohne Frist</span></li>
+        <li><span class="sym">weiß</span><span><b>Backlog</b>: Konzepte und alles, was „irgendwann“ heißt</span></li>
+        <li><span class="sym">A</span><span><b>nur du selbst</b>: Entscheidungen und Gespräche</span></li>
+        <li><span class="sym">B</span><span><b>delegierbar</b>: mit Vorschlag aus dem Personen-Register</span></li>
+        <li><span class="sym">C</span><span><b>Routine</b>: Kandidat für Automatisierung</span></li>
       </ul>
     </div>
   </div>
@@ -450,7 +450,7 @@ Abdeckung: 14/14 ausgewertet (A: 3, B: 9, C: 2). Ungelesen: –
       </li>
       <li>
         <span class="step">Schritt 2</span>
-        <h3>Skill ablegen – Claude Code</h3>
+        <h3>Skill ablegen für Claude Code</h3>
         <p>Global nach <code>~/.claude/skills/</code>, projektweit nach <code>&lt;projekt&gt;/.claude/skills/</code>.</p>
         <pre><code>cp -r PlaudSecretary/plaud-abfrage ~/.claude/skills/</code></pre>
       </li>
@@ -482,7 +482,7 @@ Was ist neu seit gestern?</code></pre>
     <ol class="chain">
       <li><span class="ord">ZUERST</span><h3>Arbeitsordner</h3><p><code>plaud/wissensbasis.md</code> wird gelesen und nach dem Lauf direkt dort fortgeschrieben.</p></li>
       <li><span class="ord">SONST</span><h3>App oder Web</h3><p>Angehängte Datei oder Projektwissen. Zurückschreiben geht dort nicht, also wird die aktualisierte Datei am Ende ausgegeben.</p></li>
-      <li><span class="ord">ZULETZT</span><h3>Frischer Start</h3><p>Ist nichts vorhanden, entsteht eine neue Basis aus dem Template – mit kurzem Hinweis an dich.</p></li>
+      <li><span class="ord">ZULETZT</span><h3>Frischer Start</h3><p>Ist nichts vorhanden, entsteht eine neue Basis aus dem Template. Du bekommst einen kurzen Hinweis.</p></li>
     </ol>
     <p class="aside"><b>Schreibregeln:</b> nur ergänzen und aktualisieren, niemals ohne Auftrag kürzen oder löschen. Jeder Lauf schreibt Auswertungs-Log, Änderungslog und Stand-Datum fort. Die <code>.gitignore</code> des Repos hält jede <code>wissensbasis.md</code> bewusst außerhalb der Versionskontrolle.</p>
   </div>
@@ -495,9 +495,9 @@ Was ist neu seit gestern?</code></pre>
       <h2>Was der Skill nicht kann</h2>
     </div>
     <ul class="limits">
-      <li>Nicht transkribierte Aufnahmen sind unsichtbar. Der Skill kann die Transkription nicht auslösen – er führt eine Warteliste und erinnert bei jedem Lauf daran.</li>
+      <li>Nicht transkribierte Aufnahmen sind unsichtbar. Auslösen kann der Skill die Transkription nicht. Er führt eine Warteliste und erinnert bei jedem Lauf daran.</li>
       <li>Die Erkennungsqualität bei Kurz-Memos ist begrenzt. Unsichere Deutungen bleiben markiert und werden nie als Fakt behandelt.</li>
-      <li>Ohne bereitgestellte Wissensbasis startet ein Lauf mit dem leeren Template. Die Zuordnungen sind dann spürbar schwächer.</li>
+      <li>Ohne bereitgestellte Wissensbasis startet ein Lauf mit dem leeren Template. Die Zuordnungen werden dann schwächer.</li>
     </ul>
   </div>
 </section>
